@@ -57,9 +57,11 @@
                                     </div>
 
                                     <div class="col-span-6 sm:col-span-3">
-                                        <label for="factory"
-                                               class="block text-sm font-medium text-gray-700">Assign roles</label>
-                                        <v-select multiple class="style-chooser" v-model="user.selected_roles" :options="rolesArr" />
+                                        <div class="z-10 absolute w-72">
+                                            <label for="factory"
+                                                   class="block text-sm font-medium text-gray-700">Assign roles</label>
+                                            <v-select multiple class="style-chooser" v-model="user.selected_roles" :options="rolesArr" />
+                                        </div>
                                     </div>
 
                                 </div>
