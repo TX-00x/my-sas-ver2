@@ -256,7 +256,6 @@ export default {
         value: {
             handler(newValue) {
                 this.form = newValue
-                this.form.customized_panels = [];
             },
             deep: true
         },
