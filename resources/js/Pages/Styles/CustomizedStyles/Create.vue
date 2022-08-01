@@ -327,6 +327,7 @@ export default {
                 onSuccess: () => {
                     if (this.parentStyleCode !== null) {
                         this.styleForm = this.parentStyleCode;
+                        this.styleForm.customized_panels = [];
                         this.styleForm.parent_style_code = this.parentStyleCode.code;
                         this.styleForm.code = "";
                         this.styleForm.name = "";
