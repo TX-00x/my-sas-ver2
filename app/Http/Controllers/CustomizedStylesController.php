@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Domains\Styles\Actions\CreateStyle;
-use App\Domains\Styles\Actions\UpdateCustomStyle;
 use App\Domains\Styles\Actions\UpdateStyle;
 use App\Domains\Styles\Dto\CustomizedStyle as StyleDto;
 use App\Http\Requests\Styles\StyleStoreRequest;
