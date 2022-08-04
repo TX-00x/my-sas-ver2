@@ -352,10 +352,6 @@ export default {
         AppSelect
     },
     props: {
-        customers: {
-            type: Array,
-            required: true
-        },
         categories: {
             type: Array,
             required: true
@@ -387,9 +383,6 @@ export default {
         styleType: {
             type: String
         },
-        customer: {
-            type: String
-        }
     },
     data() {
         return {

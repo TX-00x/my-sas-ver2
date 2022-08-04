@@ -348,19 +348,7 @@ export default {
     },
     data() {
         return {
-            is_customized: false,
-            show_new_customized_form: false,
-            show_customized_fields: false,
-            show_customized_form: false,
-            payload: {
-                select_style_code: '',
-                select_customer: 2,
-                style_information: {}
-            },
-            reset_forms: false,
             styleForm: {},
-            parent_panels:{},
-            component_fabrics:[],
             url: '',
             form: {
                 styles_type:"Customized",

@@ -67,7 +67,6 @@ class InternalStylesController extends Controller
         }
 
         $factories = Factory::all();
-        $customers = $customerRepository->getAll();
         $categories = $categoryRepository->getAll();
         $itemTypes = $itemTypeRepository->getAll();
         $sizes = $sizeRepository->getAll();
@@ -82,7 +81,6 @@ class InternalStylesController extends Controller
 
             return Inertia::render('Styles/InternalStyles/General/Create', [
                 'styleData' => $style,
-                'customers' => $customers,
                 'categories' => $categories,
                 'itemTypes' => $itemTypes,
                 'sizes' => $sizes,
@@ -124,7 +122,6 @@ class InternalStylesController extends Controller
             return redirect()->route('style.internal.index')->with('message', 'You have no permissions for this action');
         }
         $factories = Factory::all();
-        $customers = $customerRepository->getAll();
         $categories = $categoryRepository->getAll();
         $itemTypes = $itemTypeRepository->getAll();
         $sizes = $sizeRepository->getAll();
@@ -136,7 +133,6 @@ class InternalStylesController extends Controller
 
         return Inertia::render('Styles/InternalStyles/General/Edit', [
             'styleData' => $styleDto,
-            'customers' => $customers,
             'categories' => $categories,
             'itemTypes' => $itemTypes,
             'sizes' => $sizes,

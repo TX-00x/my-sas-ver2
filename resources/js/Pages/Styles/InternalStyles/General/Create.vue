@@ -304,28 +304,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <el-divider content-position="left"><h3 class="text-lg font-bold">Trims / Accessories</h3></el-divider>
-                            <div class="py-4">
-                                <form>
-                                    <div class="shadow overflow-hidden sm:rounded-md">
-                                        <div class="px-4 py-5 bg-white sm:p-6">
-                                            <div class="grid lg:grid-cols-1 md:grid-cols-1 sm:grid-cols-1 gap-4">
-                                                <div class="w-64">
-                                                    <label for="trims_accessories_general_style" class="text-base font-medium text-gray-700">Trims/Accessories</label>
-                                                    <select name="trims_accessories_general_style" id="trims_accessories_general_style"
-                                                            v-model="form.trims_accessories"
-                                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                                        <option value="">Select option</option>
-                                                        <option value="mid-dritech-nub">Mid Dritech NUB</option>
-                                                        <option value="mid-dritech-grandeur">Mid Dritech Grandeur</option>
-                                                        <option value="mid-dritech-jongstit">Mid Dritech Jongstit</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -350,10 +328,6 @@ import AppSelect from "@/UIElements/AppSelect";
 export default {
     name: "Create",
     props: {
-        customers: {
-            type: Array,
-            required: true
-        },
         categories: {
             type: Array,
             required: true
@@ -389,9 +363,6 @@ export default {
         styleType: {
             type: String
         },
-        customer: {
-            type: String
-        }
     },
     components: {
         FormButton,
@@ -402,16 +373,6 @@ export default {
     },
     data() {
         return {
-            is_customized: false,
-            show_new_customized_form: false,
-            show_customized_fields: false,
-            show_customized_form: false,
-            payload: {
-                select_style_code: '',
-                select_customer: 2,
-                style_information: {}
-            },
-            reset_forms: false,
             styleForm: {},
             url: '',
             form: {styles_type:"General",belongs_to:"internal", sizes: [], panels: []},
