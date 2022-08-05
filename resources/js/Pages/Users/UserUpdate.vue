@@ -50,7 +50,14 @@
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="factories"
                                                class="block text-sm font-medium text-gray-700">Assign Factories</label>
-                                        <v-select multiple class="style-chooser" v-model="user.selected_factories" :options="factoriesArr" :reduce="(option) => option.id" />
+                                        <el-select class="w-full" v-model="user.selected_factories" multiple placeholder="Select">
+                                            <el-option
+                                                v-for="(factory, index) in factoriesArr"
+                                                :key="index"
+                                                :label="factory.name"
+                                                :value="factory.id">
+                                            </el-option>
+                                        </el-select>
                                     </div>
 
                                     <div class="col-span-6 sm:col-span-3">
@@ -64,8 +71,14 @@
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="factory"
                                                class="block text-sm font-medium text-gray-700">Assign roles</label>
-                                        <v-select multiple class="style-chooser" v-model="user.selected_roles"
-                                                  :options="rolesArr"/>
+                                        <el-select class="w-full" v-model="user.selected_roles" multiple placeholder="Select">
+                                            <el-option
+                                                v-for="(role,index) in rolesArr"
+                                                :key="index"
+                                                :label="role"
+                                                :value="role">
+                                            </el-option>
+                                        </el-select>
                                     </div>
 
                                 </div>
@@ -193,7 +206,7 @@ export default {
         for (const [key, value] of Object.entries(this.factories)) {
             this.factoriesArr.push({
                 id: value.id,
-                label: value.name
+                name: value.name
             });
         }
 

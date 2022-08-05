@@ -26,10 +26,10 @@ class StoreCustomerRequest extends FormRequest
         return [
             'name' => 'required|string|min:2|max:100',
             'email' => 'required|email',
-            'description' => 'string|max:255',
+            'description' => 'nullable|string|max:255',
             'cs_agent_id' => 'required|integer',
             'sales_agent_id' => 'required|integer',
-            'logo_id' => 'required|integer'
+            'logo_id' => 'nullable|integer'
         ];
     }
 
@@ -40,7 +40,6 @@ class StoreCustomerRequest extends FormRequest
             'email.required' => 'Email field is required!',
             'cs_agent_id.required' => 'Customer Service agent field is required!',
             'sales_agent_id.required' => 'Sales agent field is required!',
-            'logo_id.required' => 'A logo is required!'
         ];
     }
 }
