@@ -31,7 +31,7 @@ class StyleUpdateRequest extends FormRequest
             'sizes.*.id' => 'exists:sizes,id',
             'factories' => 'required',
             'factories.*.id' => 'exists:factories,id',
-//            'panels'
+            'panels' => 'sometimes|required|array'
         ];
     }
 

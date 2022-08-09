@@ -182,6 +182,7 @@
                             <el-divider content-position="left"><h3 class="text-lg font-bold">Panels</h3></el-divider>
                             <div class="py-4">
                                 <div class="p-5 border-2 border-gray-200">
+                                    <el-button size="small" @click="resetPanelData">Reset panel data</el-button>
                                     <el-table
                                         :data="form.panels"
                                         stripe
@@ -292,8 +293,11 @@
                                             </div>
                                             <hr>
                                             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0 pb-6">
-                                                <form-button @handle-on-click="addPanel">
+                                                <form-button :disabled="disableAddPanelButton" :class="{'opacity-50': disableAddPanelButton}" @handle-on-click="addPanel">
                                                     Add Panel
+                                                </form-button>
+                                                <form-button btnStyle="outlined" @handle-on-click="cancelAddPanel">
+                                                    Cancel
                                                 </form-button>
                                             </div>
                                         </div>
@@ -389,19 +393,14 @@ export default {
             styleForm: {},
             url: '',
             form: {styles_type:"General",belongs_to:"internal", sizes: [], panels: []},
-            panel: this.defaultPanel()
+            panel: this.defaultPanel(),
         }
     },
     mounted() {
-        this.form = this.styleData
+        // this.form = this.styleData
+        this.form = JSON.parse(JSON.stringify(this.styleData))
     },
     watch: {
-        value: {
-            handler(newValue) {
-                this.form = newValue
-            },
-            deep: true
-        },
         form: {
             handler: function (newForm) {
                 this.updateConsumptionWhenSizeChanges()
@@ -435,6 +434,13 @@ export default {
             }
         },
         addPanel(){
+            if(this.panel === this.defaultPanel()) {
+                return false;
+            }
+            if(this.panel.name === '' || this.panel.name === null) {
+                return false;
+            }
+
             this.form.panels.push(this.panel)
             this.panel = {
                 name: null,
@@ -443,6 +449,9 @@ export default {
                 consumption: []
             }
         },
+        cancelAddPanel() {
+            this.panel = this.defaultPanel();
+        },
         handleEditPanelRow(dataRow) {
             this.panel = dataRow;
             for (let [index, val] of this.form.panels.entries()) {
@@ -450,6 +459,13 @@ export default {
                     this.form.panels.splice(index, 1);
                 }
             }
+        },
+        handleRemovePanelRow(dataIndex){
+            this.form.panels.splice(dataIndex,1)
+        },
+        resetPanelData(){
+            this.form.panels = [];
+            this.form.panels = JSON.parse(JSON.stringify(this.styleData.panels))
         },
         updateConsumptionWhenSizeChanges() {
             let temp_consumption = [...this.panel.consumption]
@@ -483,6 +499,13 @@ export default {
         },
         selectedSizes() {
             return this.form.sizes;
+        },
+        disableAddPanelButton() {
+            if (this.panel.fabrics?.length === 0) {
+                return true
+            } else {
+                return false
+            }
         }
     }
 }

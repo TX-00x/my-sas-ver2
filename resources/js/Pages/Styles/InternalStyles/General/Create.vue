@@ -225,6 +225,9 @@
                                                 <form-button @handle-on-click="handleEditPanelRow(scope.row)">
                                                     Edit
                                                 </form-button>
+                                                <form-button btnStyle="danger" @handle-on-click="handleRemovePanelRow(scope.$index)">
+                                                    X
+                                                </form-button>
                                             </template>
                                         </el-table-column>
                                     </el-table>
@@ -254,6 +257,7 @@
                                                         <div>
                                                             <app-select
                                                                 v-model="panel.fabrics"
+                                                                :all-removable="false"
                                                                 filterable
                                                                 multiple
                                                                 placeholder="Select Fabric"
@@ -296,8 +300,11 @@
                                             </div>
                                             <hr>
                                             <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0 pb-6">
-                                                <form-button @handle-on-click="addPanel">
+                                                <form-button :disabled="disableAddPanelButton" :class="{'opacity-50': disableAddPanelButton}" @handle-on-click="addPanel">
                                                     Add Panel
+                                                </form-button>
+                                                <form-button btnStyle="outlined" @handle-on-click="cancelAddPanel">
+                                                    Cancel
                                                 </form-button>
                                             </div>
                                         </div>
@@ -376,7 +383,8 @@ export default {
             styleForm: {},
             url: '',
             form: {styles_type:"General",belongs_to:"internal", sizes: [], panels: []},
-            panel: this.defaultPanel()
+            panel: this.defaultPanel(),
+            disable_add_panel_button: false
         }
     },
     mounted() {
@@ -428,6 +436,13 @@ export default {
             }
         },
         addPanel(){
+            if(this.panel === this.defaultPanel()) {
+                return false;
+            }
+            if(this.panel.name === '' || this.panel.name === null) {
+                return false;
+            }
+
             this.form.panels.push(this.panel)
             this.panel = {
                 name: null,
@@ -436,6 +451,11 @@ export default {
                 consumption: []
             }
         },
+        cancelAddPanel() {
+            this.panel.name = null
+            this.panel.fabric_ids = []
+            this.panel.default_fabric = {id: null}
+        },
         handleEditPanelRow(dataRow) {
             this.panel = dataRow;
             for (let [index, val] of this.form.panels.entries()) {
@@ -443,6 +463,9 @@ export default {
                     this.form.panels.splice(index, 1);
                 }
             }
+        },
+        handleRemovePanelRow(dataIndex){
+            this.form.panels.splice(dataIndex,1)
         },
         updateConsumptionWhenSizeChanges() {
             let temp_consumption = [...this.panel.consumption]
@@ -476,6 +499,13 @@ export default {
         },
         selectedSizes() {
             return this.form.sizes;
+        },
+        disableAddPanelButton() {
+            if (this.panel.fabrics?.length === 0) {
+                return true
+            } else {
+                return false
+            }
         }
     }
 }
