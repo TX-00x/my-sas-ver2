@@ -328,6 +328,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 500,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => $csAgent->id
         ]);
 
         $lightDritechGreenInventory = MaterialInventory::factory()->create([
@@ -338,6 +339,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 1000,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => $csAgent->id
         ]);
 
         Currency::factory()->create([
