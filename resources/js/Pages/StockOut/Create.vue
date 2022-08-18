@@ -88,7 +88,6 @@
                                 <div class="px-4 py-5 bg-white sm:p-6 h-32">
                                     <div class="flex justify-evenly px-4">
 
-
                                         <div class="w-1/6 pr-5">
                                             <div class="">
                                                 <label class="text-base font-medium text-gray-700">
@@ -222,7 +221,7 @@
                                     </div>
                                 </div>
                                 <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                                    <form-button type="button" @handle-on-click="handleAddStockItems">
+                                    <form-button :disabled="!stockAvailable" :class="{'opacity-25': !stockAvailable}" type="button" @handle-on-click="handleAddStockItems">
                                         Add item
                                     </form-button>
                                 </div>
@@ -372,6 +371,9 @@ export default {
         },
         factoryId: {
             type: Number
+        },
+        stockAvailable: {
+            type: Boolean
         }
     },
     components: {

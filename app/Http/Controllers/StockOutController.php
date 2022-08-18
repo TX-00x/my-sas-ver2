@@ -119,11 +119,16 @@ class StockOutController extends Controller
             ->where('colour_id', $colorId)->first();
 
         $materialInventory = null;
+        $stockAvailable = false;
         if ($materialVariation && $factoryId != "" && $supplierId != "") {
             $materialInventory = MaterialInventory::where('material_variation_id', $materialVariation->id)
                 ->where('factory_id', $factoryId)
                 ->where('supplier_id', $supplierId)
                 ->first();
+
+            if ($request->filled('supplier_id') && $materialInventory->available_quantity > 0) {
+                $stockAvailable = true;
+            }
         }
 
 
@@ -138,7 +143,8 @@ class StockOutController extends Controller
             'suppliers' => $suppliers,
             'customers' => $customers,
             'selectedMaterial' => $selectedMaterial,
-            'materialInventory' => $materialInventory
+            'materialInventory' => $materialInventory,
+            'stockAvailable' => $stockAvailable
         ]);
     }
 
