@@ -25,8 +25,7 @@
                     </div>
 
                     <div class="flex flex-row-reverse">
-
-                            <div class="w-80 pt-2">
+                        <div class="w-80 pt-2">
                             <select-menu
                                 placeholder="Select a factory"
                                 label="name"

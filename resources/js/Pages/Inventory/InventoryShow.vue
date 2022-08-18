@@ -48,6 +48,11 @@
 
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Purchase Order
+                                </th>
+
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Out
                                 </th>
 
@@ -96,6 +101,12 @@
                                         <a class="cursor-pointer text-blue-500 text-sm" @click="showInvoice(stock.invoice_item.invoice.id)">
                                             #{{ stock.invoice_item.invoice.invoice_number }}
                                         </a>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ stock.invoice_item.invoice.purchase_order_number }}
                                     </div>
                                 </td>
 

@@ -35,8 +35,13 @@ class PurchaseOrderController extends Controller
 
         $factories = Factory::all()->toArray();
 
+        $q = $request->get('q');
+
         $purchase_orders = MaterialPurchaseOrder::query()
             ->with(['supplier', 'assignedFactory', 'user'])
+            ->when($q, function ($query, $orderNumber) {
+                return $query->where('id', $orderNumber);
+            })
             ->when($factory, function ($query, $factory) {
                 return $query->where('factory_id', $factory);
             })
