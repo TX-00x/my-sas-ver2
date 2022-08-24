@@ -105,8 +105,10 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">
-                                        {{ stock.invoice_item.invoice.purchase_order_number }}
+                                    <div v-if="stock.invoice_item">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ stock.invoice_item.invoice.purchase_order_number }}
+                                        </div>
                                     </div>
                                 </td>
 
