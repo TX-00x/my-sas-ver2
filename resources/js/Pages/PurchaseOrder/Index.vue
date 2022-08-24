@@ -26,6 +26,9 @@
                                 @selected="setSelectedFactory"
                             ></select-menu>
                         </div>
+                        <div class="pt-2 pr-2">
+                            <el-input placeholder="Search by purchase order number" v-model="query" autocomplete="off" @input="searchMaterials"></el-input>
+                        </div>
                     </div>
                 </div>
 
@@ -208,7 +211,8 @@ export default {
     data() {
         return {
             factory_options: [],
-            selected_factory: {}
+            selected_factory: {},
+            query: '',
         }
     },
     mounted() {
@@ -256,6 +260,16 @@ export default {
             })
         },
 
+        searchMaterials(){
+            console.log("came here...")
+            this.$inertia.visit(this.$inertia.page.url, {
+                preserveState: true,
+                preserveScroll: true,
+                data: {
+                    q: this.query
+                }
+            })
+        }
     }
 }
 </script>
