@@ -126,7 +126,7 @@ class StockOutController extends Controller
                 ->where('supplier_id', $supplierId)
                 ->first();
 
-            if ($request->filled('supplier_id') && $materialInventory->available_quantity > 0) {
+            if ($request->filled('supplier_id') && $materialInventory) {
                 $stockAvailable = true;
             }
         }
