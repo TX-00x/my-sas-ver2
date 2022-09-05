@@ -37,20 +37,38 @@ class PurchaseOrderController extends Controller
 
         $q = $request->get('q');
 
-        $purchase_orders = MaterialPurchaseOrder::query()
-            ->with(['supplier', 'assignedFactory', 'user'])
-            ->when($q, function ($query, $orderNumber) {
-                return $query->where('id', $orderNumber);
-            })
-            ->when($factory, function ($query, $factory) {
-                return $query->where('factory_id', $factory);
-            })
-            ->when($status, function ($query, $status) {
-                return $query->where('evaluation_status', $status);
-            })
-            ->orderBy("created_at", "DESC")
-            ->paginate()
-            ->appends($request->except(['page', '_token']));
+        if ($status == 'Completed') {
+            $purchase_orders = MaterialPurchaseOrder::onlyTrashed()
+                ->with(['supplier', 'assignedFactory', 'user'])
+                ->when($q, function ($query, $orderNumber) {
+                    return $query->where('id', $orderNumber);
+                })
+                ->when($factory, function ($query, $factory) {
+                    return $query->where('factory_id', $factory);
+                })
+                ->when($status, function ($query) {
+                    return $query->where('evaluation_status', 'Approved');
+                })
+                ->orderBy("created_at", "DESC")
+                ->paginate()
+                ->appends($request->except(['page', '_token']));
+        } else {
+
+            $purchase_orders = MaterialPurchaseOrder::query()
+                ->with(['supplier', 'assignedFactory', 'user'])
+                ->when($q, function ($query, $orderNumber) {
+                    return $query->where('id', $orderNumber);
+                })
+                ->when($factory, function ($query, $factory) {
+                    return $query->where('factory_id', $factory);
+                })
+                ->when($status, function ($query, $status) {
+                    return $query->where('evaluation_status', $status);
+                })
+                ->orderBy("created_at", "DESC")
+                ->paginate()
+                ->appends($request->except(['page', '_token']));
+        }
 
         return Inertia::render(
             'PurchaseOrder/Index',

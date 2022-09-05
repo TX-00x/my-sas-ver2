@@ -170,6 +170,33 @@
                             </app-table>
 
                         </el-tab-pane>
+                        <el-tab-pane label="Completed" key="Completed">
+                            <app-table
+                                emptyText="No purchase orders created"
+                                :items="purchase_orders.data"
+                                :headers="[
+                        {key: 'id', name: 'ID', width: '80px'},
+                        {key: 'supplier.name', name: 'Supplier'},
+                        {key: 'assigned_factory.name', name: 'Factory'},
+                        {key: 'user.name', name: 'Evaluated By'},
+                        {key: 'evaluated_at', name: 'Evaluated On'},
+                      ]">
+                                <el-table-column
+                                    fixed="right"
+                                    label="Operations"
+                                    width="250">
+                                    <template #default="scope">
+
+                                        <inertia-link
+                                            class="inline-flex items-center px-4 py-1 border-green-600 border hover:bg-green-700 hover:border-transparent hover:text-white rounded-sm font-semibold text-xs text-green-900 uppercase tracking-widest active:bg-green-900 focus:outline-none focus:border-green-900 focus:shadow-outline-green transition ease-in-out duration-150"
+                                            :href="route('purchase.orders.show',{ purchase_order: scope.row.id })">
+                                            View
+                                        </inertia-link>
+
+                                    </template>
+                                </el-table-column>
+                            </app-table>
+                        </el-tab-pane>
                     </el-tabs>
 
                 </div>
