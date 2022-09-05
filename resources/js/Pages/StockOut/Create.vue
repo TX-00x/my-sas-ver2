@@ -183,13 +183,13 @@
                                                 </label>
                                                 <input
                                                     v-model="stockOutItem.pieces"
-                                                    class="h-9 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md w-20"
+                                                    class="h-9 w-full mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
                                                     type="text">
                                             </div>
                                         </div>
 
-                                        <div class="w-1/6">
-                                            <label class="text-base font-medium text-gray-700">
+                                        <div class="w-1/6 pr-5">
+                                            <label class="text-xs font-medium text-gray-700">
                                                 Usage
                                                 <template v-if="materialInventory">
                                                     (Avail. {{ materialInventory.available_quantity }})
@@ -197,22 +197,42 @@
                                             </label>
                                             <div>
                                                 <div class="flex flex-wrap items-stretch w-full mb-4 relative">
-                                                    <div class="flex -mr-px">
-                                                            <span
-                                                                class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">
-                                                                <template v-if="selectedMaterial">
-                                                                    {{ selectedMaterial.unit }}
-                                                                </template>
-                                                                <template v-else>
-                                                                   m
-                                                                </template>
-                                                            </span>
-                                                    </div>
+                                                      <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 rounded-l-md border border-r-0 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                                            <template v-if="selectedMaterial">
+                                                                {{ selectedMaterial.unit }}
+                                                            </template>
+                                                          <template v-else>
+                                                              m
+                                                          </template>
+                                                      </span>
+                                                    <input type="text"
+                                                           class="w-full flex-1 min-w-0 w-full leading-normal h-10 border-gray-300 rounded-md rounded-l-none focus:ring-indigo-500 focus:border-indigo-500 px-3 relative"
+                                                           placeholder="0.00"
+                                                           id="sub_total-value"
+                                                           v-model="stockOutItem.usage">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="w-1/6">
+                                            <label class="text-xs font-medium text-gray-700">
+                                                Required usage
+                                            </label>
+                                            <div>
+                                                <div class="flex flex-wrap items-stretch w-full mb-4 relative">
+                                                     <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 rounded-l-md border border-r-0 border-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                                         <template v-if="selectedMaterial">
+                                                             {{ selectedMaterial.unit }}
+                                                         </template>
+                                                          <template v-else>
+                                                              m
+                                                          </template>
+                                                     </span>
                                                     <input type="text"
                                                            class="flex-shrink flex-grow flex-auto leading-normal w-20 flex-1 h-10 border-gray-300 rounded-md rounded-l-none focus:ring-indigo-500 focus:border-indigo-500 px-3 relative"
                                                            placeholder="0.00"
                                                            id="sub_total-value"
-                                                           v-model="stockOutItem.usage">
+                                                           v-model="stockOutItem.actual_required_usage">
                                                 </div>
                                             </div>
                                         </div>
@@ -261,6 +281,10 @@
                                     Usage
                                 </th>
                                 <th scope="col"
+                                    class="px-6 py-3 text-left text-gray-800 uppercase tracking-wide text-xs font-bold">
+                                    Required Usage
+                                </th>
+                                <th scope="col"
                                     class="px-1 w-20 text-center py-3 text-gray-800 uppercase tracking-wide text-xs font-bold">
                                 </th>
                             </tr>
@@ -304,6 +328,12 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ item.usage }} {{ item.material.unit }}
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ item.actual_required_usage }} {{ item.material.unit }}
                                     </div>
                                 </td>
 
@@ -407,6 +437,7 @@ export default {
                 supplier_id: null,
                 pieces: '',
                 usage: '',
+                actual_required_usage: '',
                 usageMeasurement: ''
             },
             stockOutItems: [],

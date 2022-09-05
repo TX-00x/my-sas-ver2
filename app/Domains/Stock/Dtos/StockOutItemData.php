@@ -20,6 +20,7 @@ class StockOutItemData extends DataTransferObject
     public Colour $colour;
     public float $pieces;
     public float $usage;
+    public float $actual_required_usage;
 
     public static function fromRequest(array $data): StockOutItemData
     {
@@ -31,6 +32,7 @@ class StockOutItemData extends DataTransferObject
             'colour' => isset($data['colour_id']) ? Colour::find($data['colour_id']) : null,
             'pieces' => $data['pieces'],
             'usage' => $data['usage'],
+            'actual_required_usage' => $data['actual_required_usage']
         ]);
     }
 }

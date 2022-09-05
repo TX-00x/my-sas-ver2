@@ -25,6 +25,7 @@ class CreateStockOutItemsAction
                 'colour_id' => $stockOutItemData->colour->id,
                 'pieces' => $stockOutItemData->pieces,
                 'usage' => $stockOutItemData->usage,
+                'actual_required_usage' => $stockOutItemData->actual_required_usage
             ]);
 
             // the following code should be refactored
