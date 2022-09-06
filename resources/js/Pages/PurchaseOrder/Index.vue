@@ -189,7 +189,7 @@
 
                                         <inertia-link
                                             class="inline-flex items-center px-4 py-1 border-green-600 border hover:bg-green-700 hover:border-transparent hover:text-white rounded-sm font-semibold text-xs text-green-900 uppercase tracking-widest active:bg-green-900 focus:outline-none focus:border-green-900 focus:shadow-outline-green transition ease-in-out duration-150"
-                                            :href="route('purchase.orders.show',{ purchase_order: scope.row.id })">
+                                            :href="route('purchase.orders.completed',{ purchase_order: scope.row.id })">
                                             View
                                         </inertia-link>
 

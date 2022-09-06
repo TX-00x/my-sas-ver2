@@ -200,4 +200,34 @@ class PurchaseOrderController extends Controller
         );
 
     }
+
+    public function showCompleted(MaterialPurchaseOrder $purchase_order)
+    {
+        $purchase_order->load('items', 'supplier', 'assignedFactory');
+
+        $materials = Materials::all();
+        $colours = Colour::all();
+        $suppliers = Supplier::all();
+
+        $unitCollection = Unit::all();
+        $units = SelectOptions::selectOptionsObject($unitCollection, 'type', 'name');
+
+        $factories = Factory::all();
+
+        $currencies = Currency::all();
+
+
+        return Inertia::render(
+            'PurchaseOrder/View',
+            [
+                'factories' => $factories,
+                'materials' => $materials,
+                'colours' => $colours,
+                'suppliers' => $suppliers,
+                'units' => $units,
+                'currencies' => $currencies,
+                'purchaseOrder' => $purchase_order
+            ]
+        );
+    }
 }

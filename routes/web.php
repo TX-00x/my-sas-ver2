@@ -223,7 +223,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/external-styles/edit/{style}', [ExternalStylesController::class, 'edit'])->name('style.external.edit');
     Route::get('/external-styles', [ExternalStylesController::class, 'index'])->name('style.external.index');
 
-
+    Route::get('/purchase-order/show-completed/{purchase_order}', [\App\Http\Controllers\PurchaseOrderController::class, 'showCompleted'])->withTrashed()->name('purchase.orders.completed');
     Route::resource('purchase-order', \App\Http\Controllers\PurchaseOrderController::class, ['names' => 'purchase.orders']);
     Route::post('/approve-purchase-order/{materialPurchaseOrder}', \App\Http\Controllers\ApprovePurchaseOrderController::class)->name('purchase.orders.approve');
     Route::post('/reject-purchase-order/{materialPurchaseOrder}', \App\Http\Controllers\RejectPurchaseOrderController::class)->name('purchase.orders.reject');
