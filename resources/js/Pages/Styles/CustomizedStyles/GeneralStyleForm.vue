@@ -161,6 +161,66 @@
                     </table>
                 </div>
             </div>
+            <el-divider content-position="left"><h3 class="text-lg font-bold">Embellishments</h3></el-divider>
+            <div class="py-4">
+                <div class="p-5 border-2 border-gray-200">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                                Embellishment type
+                            </label>
+                            <app-select
+                                :filterable="true"
+                                :multiple="false"
+                                :options="embellishments"
+                                option-label="type"
+                                no-data-text="No Types available"
+                                no-match-text="Type not found"
+                                v-model="form.embellishments"
+                                placeholder="Select Embellishment type name"
+                            ></app-select>
+                        </div>
+
+                        <div>
+                            <div class="">
+                                <label for="dropzone-file"
+                                       :class="{'bg-contain bg-center bg-no-repeat' : uploadFieldNotEmpty}" :style="{ backgroundImage: 'url('+form.embellishmentUrl+')'}"
+                                       class="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div class="flex flex-col justify-center items-center pt-5 pb-6">
+                                        <svg class="mb-3 w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">JPEG, JPG or PNG</p>
+                                    </div>
+                                    <input name="style_image" id="dropzone-file" type="file" @change="previewEmbImage" ref="style_code_image" class="hidden" />
+                                </label>
+                                <div class="absolute top-4 right-4 cursor-pointer" v-show="uploadFieldNotEmpty" @click="setEmbellishmentUploadFieldEmpty">
+                                    <el-tooltip content="Remove image" placement="top">
+                                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </el-tooltip>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                                Position
+                            </label>
+                            <app-select
+                                :filterable="true"
+                                :multiple="false"
+                                :options="[{name:'top'}, {name:'bottom'}]"
+                                option-label="name"
+                                no-data-text="No Positions available"
+                                no-match-text="Position not found"
+                                v-model="form.embellishment_positions"
+                                placeholder="Select a position"
+                            ></app-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -197,6 +257,10 @@ export default {
             required: true
         },
         sizes: {
+            type: Array,
+            required: true
+        },
+        embellishments: {
             type: Array,
             required: true
         },
@@ -246,6 +310,11 @@ export default {
     },
     mounted() {
         this.form = this.value
+        if ( this.form.embellishmentImage === "" || this.form.embellishmentImage == null) {
+            this.embellishmentUrl = ''
+        } else {
+            this.embellishmentUrl = this.form.embellishmentImage;
+        }
     },
     watch: {
         resetForm: function (newValue, oldValue) {
@@ -390,7 +459,15 @@ export default {
                     this.form.panels.splice(index, 1);
                 }
             }
-        }
+        },
+        setEmbellishmentUploadFieldEmpty(){
+            this.url = '';
+            this.$refs.style_code_image.value = null;
+        },
+        previewEmbImage(e) {
+            const file = e.target.files[0];
+            this.url = URL.createObjectURL(file);
+        },
     },
     computed: {
         selectedFabrics() {
@@ -409,6 +486,9 @@ export default {
         disableAddPanelButton() {
             return false;
         },
+        uploadFieldNotEmpty(){
+            return this.url !== '';
+        }
     }
 }
 </script>

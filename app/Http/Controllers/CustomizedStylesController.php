@@ -9,6 +9,7 @@ use App\Domains\Styles\Dto\CustomizedStyle as StyleDto;
 use App\Http\Requests\Styles\StyleStoreRequest;
 use App\Http\Requests\Styles\StyleUpdateRequest;
 use App\Models\Colour;
+use App\Models\EmbellishmentType;
 use App\Models\Factory;
 use App\Models\Style;
 use App\Models\StylePanel;
@@ -114,6 +115,7 @@ class CustomizedStylesController extends Controller
             'categories' => $categories,
             'itemTypes' => $itemTypes,
             'sizes' => $sizes,
+            'embellishments' => EmbellishmentType::all(),
             'factories' => $factories,
             'materials' => $materials,
             'styles' => $styles,
@@ -126,6 +128,7 @@ class CustomizedStylesController extends Controller
 
     public function store(StyleStoreRequest $request)
     {
+        dd($request);
         try {
             $image_path = '';
 

@@ -126,6 +126,7 @@
                                 :materials="materials"
                                 :item-types="itemTypes"
                                 :sizes="sizes"
+                                :embellishments = "embellishments"
                                 :colours="colours"
                                 :factories="factories"
                                 v-model="styleForm"
@@ -179,6 +180,10 @@ export default {
             required: true
         },
         sizes: {
+            type: Array,
+            required: true
+        },
+        embellishments: {
             type: Array,
             required: true
         },
