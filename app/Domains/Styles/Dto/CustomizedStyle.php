@@ -39,6 +39,9 @@ class CustomizedStyle extends DataTransferObject
     #[CastWith(PanelCaster::class)]
     public ?array $panels;
 
+    #[CastWith(EmbellishmentCaster::class)]
+    public ?array $embellishments_form;
+
     /** @var \App\Domains\Styles\Dto\CustomizedPanel[] */
     #[CastWith(CustomizedPanelCaster::class)]
     public ?array $customized_panels;

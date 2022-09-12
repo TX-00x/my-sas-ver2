@@ -28,7 +28,7 @@
 
                                     <div class="flex justify-center items-center w-full relative">
                                         <label for="dropzone-file"
-                                               :style="{ backgroundImage: 'url('+url+')'}"
+                                               :style="{ backgroundImage: 'url('+styleData.style_image+')'}"
                                                class="bg-contain bg-center bg-no-repeat flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                         </label>
                                     </div>
@@ -220,6 +220,38 @@
                                         </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                            <el-divider content-position="left"><h3 class="text-lg font-bold">Embellishments</h3></el-divider>
+                            <div class="py-4">
+                                <div class="p-5 border-2 border-gray-200">
+                                    <el-row type="flex" class="py-4" :gutter="10" justify="center">
+                                        <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4" class="text-sm font-bold">
+                                           Embellishment type
+                                        </el-col>
+                                        <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4" class="text-sm font-bold">
+                                            Position
+                                        </el-col>
+                                        <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8" class="text-sm font-bold">
+                                            Image
+                                        </el-col>
+                                    </el-row>
+                                    <el-row type="flex" align="middle" class="py-4" :gutter="10" justify="center" :key="index" v-for="(item, index) in thisStyle.embellishments">
+                                        <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
+                                            {{item.embellishment_type.type}}
+                                        </el-col>
+                                        <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
+                                            {{item.position}}
+                                        </el-col>
+                                        <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
+                                            <div class="flex justify-center items-center w-full relative">
+                                                <label for="dropzone-file"
+                                                       :style="{ backgroundImage: 'url('+item.public_image_path+')'}"
+                                                       class="bg-contain bg-center bg-no-repeat flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                </label>
+                                            </div>
+                                        </el-col>
+                                    </el-row>
                                 </div>
                             </div>
                         </div>

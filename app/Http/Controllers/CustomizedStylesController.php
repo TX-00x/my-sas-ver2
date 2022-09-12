@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CustomizedStylesController extends Controller
@@ -100,12 +101,13 @@ class CustomizedStylesController extends Controller
                 ->get();
 
             $colours = $avail_materials_colours;
-
+            $parentStyleCode->embellishments_form = [];
         }
 
         $style = new StyleDto([
             'sizes' => [],
             'panels' => [],
+            'embellishments_form' => [],
             'belongs_to' => 'internal'
         ]);
 
@@ -128,7 +130,6 @@ class CustomizedStylesController extends Controller
 
     public function store(StyleStoreRequest $request)
     {
-        dd($request);
         try {
             $image_path = '';
 
@@ -162,7 +163,7 @@ class CustomizedStylesController extends Controller
         $colours = Colour::query()->get();
 
 
-        $style->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer', 'parentStyle','panels.color']);
+        $style->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer', 'parentStyle','panels.color', 'embellishments.embellishmentType']);
         $style->load(['panels.fabrics.variations.colour']);
         $styleDto = new StyleDto($style->toArray());
 
@@ -195,6 +196,10 @@ class CustomizedStylesController extends Controller
                 'id' => $panel->id
             );
         }
+
+        $styleDto->style_image = Storage::url($style->style_image);
+
+//        $parentStyleCode->embellishments_form = [];
 
         return Inertia::render('Styles/CustomizedStyles/Edit', [
             'styleData' => $styleDto,

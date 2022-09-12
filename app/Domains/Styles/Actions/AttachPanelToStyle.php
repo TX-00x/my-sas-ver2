@@ -30,8 +30,10 @@ class AttachPanelToStyle
 
         $stylePanel->consumption()->delete();
 
-        foreach ($panel->consumption as $consumption) {
-            $this->attachConsumptionToPanel->execute($stylePanel, $consumption, 'm');
+        if ($panel->consumption != null || $panel->consumption != []) {
+            foreach ($panel->consumption as $consumption) {
+                $this->attachConsumptionToPanel->execute($stylePanel, $consumption, 'm');
+            }
         }
 
         foreach ($panel->fabrics as $fabric) {

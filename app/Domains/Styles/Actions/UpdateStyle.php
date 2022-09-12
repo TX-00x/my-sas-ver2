@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Domains\Styles\Actions;
 
 use App\Domains\Styles\Dto\CustomizedStyle;
+use App\Models\EmbellishmentStyle;
 use App\Models\Style as StyleModel;
 
 class UpdateStyle
@@ -64,6 +65,39 @@ class UpdateStyle
         foreach ($styleDto->panels as $panel) {
             $this->attachPanelToStyle->execute($style, $panel);
         }
+
+
+        if ($styleDto->embellishments_form) {
+            foreach ($styleDto->embellishments_form as $embellishment) {
+                $oldEmbellishmentWithSameDetails = $style->embellishments()
+                    ->where('embellishment_id', $embellishment->type['id'])
+                    ->where('position', $embellishment->position['value']);
+
+                if (!$embellishment->already_uploaded) {
+                    if($oldEmbellishmentWithSameDetails->exists()) {
+                        $oldEmbellishmentWithSameDetails->delete();
+                    }
+
+                    $embellishmentStyle = new EmbellishmentStyle();
+                    $image_path = $embellishment->image->store('style_images', 'public');
+                    $embellishmentStyle->image_path = $image_path;
+                    $embellishmentStyle->embellishment_id = $embellishment->type['id'];
+                    $embellishmentStyle->position = $embellishment->position['value'];
+                    $style->embellishments()->save($embellishmentStyle);
+                }
+
+                if ($embellishment->already_uploaded) {
+                    if($oldEmbellishmentWithSameDetails->exists()) {
+                        $oldEmbellishmentWithSameDetails->delete();
+                    }
+                }
+            }
+        }
+
+        if (!$styleDto->embellishments_form) {
+            $style->embellishments()->delete();
+        }
+
 
         $style->refresh();
 
