@@ -42,4 +42,9 @@ class MaterialVariation extends Model implements Auditable
     {
         return $this->hasOne(MaterialInventory::class);
     }
+
+    public function inventorySummaries()
+    {
+        return $this->hasMany(InventorySummary::class);
+    }
 }

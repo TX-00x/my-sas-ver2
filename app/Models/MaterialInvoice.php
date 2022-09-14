@@ -34,4 +34,9 @@ class MaterialInvoice extends Model implements Auditable
     {
         return $this->hasMany(InventoryLog::class);
     }
+
+    public function inventorySummaries()
+    {
+        return $this->hasMany(InventorySummary::class);
+    }
 }

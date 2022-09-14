@@ -9,6 +9,7 @@ use App\Domains\Stock\Models\StockOut;
 use App\Domains\Stock\Models\StockOutItem;
 use App\Models\MaterialInventory;
 use App\Models\MaterialVariation;
+use App\Models\StockOutItemInvoice;
 use Illuminate\Support\Str;
 
 class CreateStockOutItemsAction
@@ -16,7 +17,13 @@ class CreateStockOutItemsAction
     public function execute(array $stockOutItemsData, StockOut $stockOut): void
     {
         foreach ($stockOutItemsData as $stockOutItemData) {
-            StockOutItem::create([
+
+            $totalUsage = null;
+            foreach ($stockOutItemsData->invoice_usages as $invoiceUsage) {
+                $totalUsage = $totalUsage + $invoiceUsage->usage;
+            }
+
+            $stockOutItem = StockOutItem::create([
                 'stock_out_id' => $stockOut->id,
                 'supplier_id' => $stockOutItemData->supplier->id,
                 'style_id' => $stockOutItemData->style->id,
@@ -24,8 +31,12 @@ class CreateStockOutItemsAction
                 'material_id' => $stockOutItemData->material->id,
                 'colour_id' => $stockOutItemData->colour->id,
                 'pieces' => $stockOutItemData->pieces,
-                'usage' => $stockOutItemData->usage,
+                'usage' => $totalUsage,
             ]);
+
+            foreach ($stockOutItemsData->invoice_usages as $invoiceUsage) {
+                (new CreateStockOutItemInvoiceAction())->create($invoiceUsage, $stockOutItem);
+            }
 
             // the following code should be refactored
             $materialVariation = MaterialVariation::where('material_id', $stockOutItemData->material->id)
@@ -41,14 +52,13 @@ class CreateStockOutItemsAction
                     $aggregateRoot = InventoryAggregateRoot::retrieve($materialInventory->aggregate_id);
                     $aggregateRoot->removeStock(
                         $stockOutItemData->material->unit,
-                        $stockOutItemData->usage,
+                        $totalUsage,
                         $stockOutItemData->stylePanel->id,
                         $stockOut->order_id,
                         auth()->user()->id
                     );
                     $aggregateRoot->persist();
                 }
-
             }
         }
     }
