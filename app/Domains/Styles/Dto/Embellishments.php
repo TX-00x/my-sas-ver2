@@ -7,6 +7,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class Embellishments extends DataTransferObject
 {
+    public ?int $id;
     public ?array $type;
     public ?array $position;
     public ?string $image_url;

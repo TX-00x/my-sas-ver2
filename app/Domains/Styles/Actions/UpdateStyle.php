@@ -69,27 +69,30 @@ class UpdateStyle
 
         if ($styleDto->embellishments_form) {
             foreach ($styleDto->embellishments_form as $embellishment) {
-                $oldEmbellishmentWithSameDetails = $style->embellishments()
-                    ->where('embellishment_id', $embellishment->type['id'])
-                    ->where('position', $embellishment->position['value']);
+                if ($this->isOnlyImageChangedInEditRequest($embellishment)) {
+                    $dbRecord = $this->getDBEmbellishment($embellishment, $style);
+                    $image_path = $embellishment->image->store('style_images', 'public');
 
-                if (!$embellishment->already_uploaded) {
-                    if($oldEmbellishmentWithSameDetails->exists()) {
-                        $oldEmbellishmentWithSameDetails->delete();
-                    }
+                    $dbRecord->update(['image_path' => $image_path]);
+                }
 
+                if ($this->isOnlyPropertiesChangedInEditRequest($embellishment)) {
+                    $dbRecord = $this->getDBEmbellishment($embellishment, $style);
+
+                    $dbRecord->update([
+                        'embellishment_id' => $embellishment->type['id'],
+                        'position' => $embellishment->position['value']
+                    ]);
+                }
+
+                if (!$embellishment->id) {
                     $embellishmentStyle = new EmbellishmentStyle();
                     $image_path = $embellishment->image->store('style_images', 'public');
                     $embellishmentStyle->image_path = $image_path;
                     $embellishmentStyle->embellishment_id = $embellishment->type['id'];
                     $embellishmentStyle->position = $embellishment->position['value'];
-                    $style->embellishments()->save($embellishmentStyle);
-                }
 
-                if ($embellishment->already_uploaded) {
-                    if($oldEmbellishmentWithSameDetails->exists()) {
-                        $oldEmbellishmentWithSameDetails->delete();
-                    }
+                    $style->embellishments()->save($embellishmentStyle);
                 }
             }
         }
@@ -102,5 +105,27 @@ class UpdateStyle
         $style->refresh();
 
         return $style;
+    }
+
+    public function isOnlyImageChangedInEditRequest($embellishment): bool
+    {
+        return !$embellishment->already_uploaded && $embellishment->id;
+    }
+
+    public function isOnlyPropertiesChangedInEditRequest($embellishment): bool
+    {
+        return $embellishment->already_uploaded && $embellishment->id;
+    }
+
+    public function oldEmbellishmentWithSameDetails($embellishment, $style)
+    {
+        return $style->embellishments()
+            ->where('embellishment_id', $embellishment->type['id'])
+            ->where('position', $embellishment->position['value']);
+    }
+
+    public function getDBEmbellishment($embellishment, $style)
+    {
+        return $style->embellishments()->where('id', $embellishment->id)->first();
     }
 }

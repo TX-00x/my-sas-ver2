@@ -192,6 +192,10 @@ export default {
         colours:{
             type: Array,
             required: true,
+        },
+        assetUrl: {
+            type: String,
+            required: true,
         }
     },
     components: {
@@ -235,13 +239,14 @@ export default {
         if ( this.styleForm.style_image === "" || this.styleForm.style_image == null) {
             this.url = ''
         } else {
-            this.url = this.styleForm.style_image;
+            this.url = this.assetUrl+this.styleForm.style_image;
         }
 
         if (this.styleForm.embellishments_form.length > 0) {
             let newEmbellishmentArr = [];
             for (const [index, embellishmentsKey] of this.styleForm.embellishments_form.entries()) {
                 newEmbellishmentArr[index] = {
+                    id:embellishmentsKey.id,
                     image: "",
                     image_url: embellishmentsKey.public_image_path,
                     position: { name:this.capitalizeFirstLetter(embellishmentsKey.position), value: embellishmentsKey.position },
@@ -284,7 +289,9 @@ export default {
             this.$inertia.post('/new-customized-styles', this.styleForm)
         },
         update() {
-            // console.log(this.styleForm)
+            if (this.$refs.style_code_image) {
+                this.styleForm.image = this.$refs.style_code_image.files[0];
+            }
             this.styleForm._method = 'put'
             this.$inertia.post('/new-customized-styles/' + this.styleForm.id, this.styleForm)
         },

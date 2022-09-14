@@ -143,7 +143,6 @@ class NewCustomizedStylesController extends Controller
 
         $style->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer', 'parentStyle', 'panels.color', 'embellishments.embellishmentType']);
         $styleDto = new StyleDto($style->toArray());
-        $styleDto->style_image = Storage::url($style->style_image);
 
         $styleDto->embellishments_form = $style->embellishments->toArray();
 
@@ -173,6 +172,7 @@ class NewCustomizedStylesController extends Controller
             'factories' => $factories,
             'materials' => $materials,
             'colours' => $avail_materials_colours,
+            'assetUrl' => Storage::url('')
         ]);
     }
 
