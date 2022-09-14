@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('inventory_summaries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('material_variation_id')->constrained();
+            $table->foreignId('material_inventory_id')->constrained();
             $table->foreignId('material_invoice_id')->constrained();
             $table->float('in')->nullable();
             $table->float('out')->nullable();

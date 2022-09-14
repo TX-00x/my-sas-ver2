@@ -6,7 +6,7 @@ use App\Domains\Stock\Models\StockOutItem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StockOutItemInvoice extends Model
+class StockOutItemsInvoice extends Model
 {
     use HasFactory;
 

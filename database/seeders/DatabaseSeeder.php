@@ -286,7 +286,6 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierA->id,
             'purchase_order_number' => 'AB11234',
             'invoice_number' => 'ABC12211',
-//            'factory_id' => Factory::find(1) ? Factory::find(1)->id : Factory::factory()->create()->id,
             'factory_id' => Factory::first(),
         ]);
 
@@ -328,6 +327,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 500,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => User::query()->where('email', 'test@example.com')->first()
         ]);
 
         $lightDritechGreenInventory = MaterialInventory::factory()->create([
@@ -338,6 +338,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 1000,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => User::query()->where('email', 'test@example.com')->first()
         ]);
 
         Currency::factory()->create([

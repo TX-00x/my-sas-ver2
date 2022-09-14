@@ -161,7 +161,9 @@ class StockOutController extends Controller
             return Redirect::route('inventory.index')
                 ->with('success', 'Record has been saved successfully.');
         } catch (\Exception $ex) {
+//            throw $ex;
             return back()->withInput()->withErrors(['message' => $ex->getMessage()]);
         }
+
     }
 }

@@ -20,6 +20,7 @@ class StockOutItemData extends DataTransferObject
     public Colour $colour;
     public float $pieces;
     public ?float $usage;
+    public array $invoices;
 
     public static function fromRequest(array $data): StockOutItemData
     {
@@ -31,10 +32,17 @@ class StockOutItemData extends DataTransferObject
             'colour' => isset($data['colour_id']) ? Colour::find($data['colour_id']) : null,
             'pieces' => $data['pieces'],
             'usage' => $data['usage'],
-            'invoice_usages' => array_map(
-                fn($invoiceUsage) => StockOutItemInvoiceData::fromRequest($invoiceUsage),
-                $data['invoice_usages']
-            )
+            'invoices' => self::mapInvoiceData($data['invoice_usages']),
         ]);
+    }
+
+    public static function mapInvoiceData($invoices): array
+    {
+        return array_map(function ($invoice) {
+            return (object) [
+                'id' => $invoice['invoice']['id'],
+                'usage' => $invoice['usage']
+            ];
+        },$invoices);
     }
 }

@@ -10,7 +10,9 @@ use App\Domains\Inventory\Events\Internal\StockRemoved;
 use App\Domains\Inventory\Events\Internal\StockRemovedManually;
 use App\Domains\Inventory\Events\Internal\StockRemovedViaStockAdjust;
 use App\Models\InventoryLog;
+use App\Models\InventorySummary;
 use App\Models\MaterialInventory;
+use App\Models\MaterialInvoiceItem;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
@@ -59,6 +61,21 @@ class InventoryProjector extends Projector
             'created_at' => $stockAdded->createdAt(),
             'updated_at' => $stockAdded->createdAt(),
         ]);
+
+        // Create Summery Record
+        $materialInvoiceItem = MaterialInvoiceItem::find($stockAdded->invoiceItemId);
+        InventorySummary::firstOrCreate(
+            [
+                'material_inventory_id' => $materialInventory->id,
+                'material_invoice_id' => $materialInvoiceItem->material_invoice_id,
+            ],
+            [
+                'in' => $stockAdded->quantity,
+                'out' => 0,
+                'unit_price' => $materialInvoiceItem->unit_price,
+                'total_price' => $materialInvoiceItem->sub_total,
+            ]
+        );
     }
 
     public function onStockAddedViaStockAdjust(StockAddedViaStockAdjust $stockAddedViaStockAdjust)
@@ -113,6 +130,19 @@ class InventoryProjector extends Projector
             'created_at' => $stockRemoved->createdAt(),
             'updated_at' => $stockRemoved->createdAt(),
         ]);
+
+        //Add record to summery
+        foreach ($stockRemoved->invoices as $invoice) {
+            $summery = InventorySummary::query()
+                ->where('material_inventory_id', '=', $materialInventory->id)
+                ->where('material_invoice_id', '=', $invoice->id)
+                ->get()
+                ->first();
+            $summery->out = $summery->out + $invoice->usage;
+            $totalValueReduced = $invoice->usage * $summery->unit_price;
+            $summery->total_price = $summery->total_price - $totalValueReduced;
+            $summery->save();
+        }
     }
 
     public function onStockRemovedViaStockAdjust(StockRemovedViaStockAdjust $stockRemovedViaStockAdjust)
