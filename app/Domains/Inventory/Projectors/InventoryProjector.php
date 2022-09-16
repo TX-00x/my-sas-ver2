@@ -102,6 +102,21 @@ class InventoryProjector extends Projector
             'created_at' => $stockAddedViaStockAdjust->createdAt(),
             'updated_at' => $stockAddedViaStockAdjust->createdAt(),
         ]);
+
+        foreach ($stockAddedViaStockAdjust->invoices as $invoice) {
+            $materialInvoiceItem = MaterialInvoiceItem::find($invoice["invoice"]["id"]);
+
+            $summery = InventorySummary::query()
+                ->where('material_inventory_id', '=', $materialInventory->id)
+                ->where('material_invoice_id', '=', $materialInvoiceItem->id)
+                ->get()
+                ->first();
+
+            $summery->in = $summery->in + $invoice["usage"];
+            $totalValueAdded = $invoice["usage"] * $summery->unit_price;
+            $summery->total_price = $summery->total_price + $totalValueAdded;
+            $summery->save();
+        }
     }
 
     public function onStockRemoved(StockRemoved $stockRemoved)
@@ -138,6 +153,7 @@ class InventoryProjector extends Projector
                 ->where('material_invoice_id', '=', $invoice->id)
                 ->get()
                 ->first();
+
             $summery->out = $summery->out + $invoice->usage;
             $totalValueReduced = $invoice->usage * $summery->unit_price;
             $summery->total_price = $summery->total_price - $totalValueReduced;
@@ -170,6 +186,21 @@ class InventoryProjector extends Projector
             'created_at' => $stockRemovedViaStockAdjust->createdAt(),
             'updated_at' => $stockRemovedViaStockAdjust->createdAt(),
         ]);
+
+        foreach ($stockRemovedViaStockAdjust->invoices as $invoice) {
+            $materialInvoiceItem = MaterialInvoiceItem::find($invoice["invoice"]["id"]);
+
+            $summery = InventorySummary::query()
+                ->where('material_inventory_id', '=', $materialInventory->id)
+                ->where('material_invoice_id', '=', $materialInvoiceItem->id)
+                ->get()
+                ->first();
+
+            $summery->out = $summery->out + $invoice["usage"];
+            $totalValueReduced = $invoice["usage"] * $summery->unit_price;
+            $summery->total_price = $summery->total_price - abs($totalValueReduced);
+            $summery->save();
+        }
     }
 
     private function getMaterialFromInventory(string $aggregateRootId)

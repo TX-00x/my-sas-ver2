@@ -154,7 +154,6 @@ class StockOutController extends Controller
         CreateStockOutAction $stockOutAction,
         StockOutRequest $stockOutRequest
     ) {
-
         try {
             $stockOutData = StockOutData::fromRequest($stockOutRequest);
             $stockOutAction->execute($stockOutData);

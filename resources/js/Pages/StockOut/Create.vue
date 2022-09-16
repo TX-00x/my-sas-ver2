@@ -189,13 +189,23 @@
                                                 </div>
                                             </div>
 
-                                            <div class="">
-                                                <div class="">
+                                            <div class="flex flex-row">
+                                                <div class="px-2">
                                                     <label class="text-base font-medium text-gray-700">
                                                         No of pieces
                                                     </label>
                                                     <input
                                                         v-model="stockOutItem.pieces"
+                                                        class="h-9 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md w-20"
+                                                        type="text">
+                                                </div>
+                                                <div class="px-2">
+                                                    <label class="text-base font-medium text-gray-700">
+                                                        Total Usage
+                                                    </label>
+                                                    <input
+                                                        @change="recalculateUsage"
+                                                        v-model.number="stockOutItem.usage"
                                                         class="h-9 mt-1 focus:ring-indigo-500 focus:border-indigo-500 block shadow-sm sm:text-sm border-gray-300 rounded-md w-20"
                                                         type="text">
                                                 </div>
@@ -250,19 +260,20 @@
                                                         <div>
                                                             <div class="flex flex-wrap items-stretch w-full mb-4 relative">
                                                                 <div class="flex -mr-px">
-                                                            <span
-                                                                class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">
-                                                                    <template v-if="selectedMaterial">
-                                                                        {{ selectedMaterial.unit }}
-                                                                    </template>
-                                                                    <template v-else>
-                                                                       m
-                                                                    </template>
-                                                            </span>
+                                                                    <span
+                                                                        class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">
+                                                                            <template v-if="selectedMaterial">
+                                                                                {{ selectedMaterial.unit }}
+                                                                            </template>
+                                                                            <template v-else>
+                                                                               m
+                                                                            </template>
+                                                                    </span>
                                                                 </div>
                                                                 <input type="text"
                                                                        class="flex-shrink flex-grow flex-auto leading-normal w-20 flex-1 h-10 border-gray-300 rounded-md rounded-l-none focus:ring-indigo-500 focus:border-indigo-500 px-3 relative"
                                                                        placeholder="0.00"
+                                                                       @change="recalculateErrorMessage(item.usage, index)"
                                                                        id="sub_total-value"
                                                                        v-model.number="item.usage">
                                                             </div>
@@ -286,7 +297,9 @@
                                     <danger-button button-type="textOnly" type="button" @click.native="resetStockOutItem">
                                         Reset form
                                     </danger-button>
-
+                                    <div v-show="showTotalInvoiceUsageError" class="text-sm text-red-600 font-bold">
+                                        Total invoice usage is greater than requested total usage!
+                                    </div>
                                     <form-button :disabled="!stockAvailable" :class="{'opacity-25': !stockAvailable}" type="button" @handle-on-click="handleAddStockItems">
                                         Add item
                                     </form-button>
@@ -487,13 +500,14 @@ export default {
                 colour_id: null,
                 supplier: null,
                 supplier_id: null,
-                pieces: '',
-                usage: '',
+                pieces: null,
+                usage: null,
                 usageMeasurement: ''
             },
             stockOutItems: [],
             resetSelectOptions: false,
             isItemReadOnly: false,
+            showTotalInvoiceUsageError: false,
         }
     },
     mounted() {
@@ -510,7 +524,9 @@ export default {
             }
         },
         addStockItemInvoice() {
-            this.stockOutItem.invoice_usages.push({invoice:{}, usage:null})
+            let lastIndex = this.stockOutItem.invoice_usages.length - 1;
+            let calculatedUsage = this.stockOutItem.usage - this.stockOutItem.invoice_usages[lastIndex].usage
+            this.stockOutItem.invoice_usages.push({invoice:{}, usage:calculatedUsage})
         },
         removeStockItemInvoice(index) {
             if (index > 0) {
@@ -634,8 +650,8 @@ export default {
                 color: null,
                 colour_id: null,
                 pieces: '',
-                usage: '',
-                invoice_usages: [{invoice:{}, usage:''}],
+                usage: null,
+                invoice_usages: [{invoice:{}, usage:null}],
             };
 
             this.$inertia.visit(route('stock.out.create'), {
@@ -656,12 +672,41 @@ export default {
                 items: [],
             }
         },
+        recalculateUsage() {
+            this.stockOutItem.invoice_usages[0].usage = this.stockOutItem.usage
+        },
+        recalculateErrorMessage(value, index) {
+            if (value === "") {
+                this.stockOutItem.invoice_usages[index].usage = 0
+            }
+
+            let totalInvoiceUsage = 0;
+            this.stockOutItem.invoice_usages.forEach((element) => {
+                totalInvoiceUsage = totalInvoiceUsage + parseInt(element.usage)
+            });
+
+            console.log(totalInvoiceUsage)
+
+            if (totalInvoiceUsage > this.stockOutItem.usage) {
+                this.showTotalInvoiceUsageError = true
+            }
+
+            if (totalInvoiceUsage <= this.stockOutItem.usage) {
+                this.showTotalInvoiceUsageError = false
+            }
+
+            // switch (true) {
+            //     case (totalInvoiceUsage > this.stockOutItem.usage)
+            // }
+        },
         isValidItem() {
             return true;
             if (this.stockOutItem.usage > this.materialInventory.available_quantity) {
                 alert("Invalid usage");
                 return false;
             }
+
+
         },
         setItemsReadOnly() {
             this.isItemReadOnly = true;

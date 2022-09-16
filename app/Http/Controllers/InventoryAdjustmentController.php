@@ -20,9 +20,9 @@ class InventoryAdjustmentController
         Request $request
     ) {
         try {
-
             $validator = Validator::make($request->all(), [
-                'quantity' => 'required|numeric|not_in:0',
+                'invoice_usages' => 'required|array',
+                'invoice_usages.*.usage' => 'required|numeric|not_in:0',
                 'reason' => 'required'
             ]);
 
@@ -34,7 +34,7 @@ class InventoryAdjustmentController
             $createInventoryStockIn->execute(
                 $inventory,
                 null,
-                (float)$request->input('quantity'),
+                $request->input('invoice_usages'),
                 auth()->user()->id,
                 $request->input('reason')
             );

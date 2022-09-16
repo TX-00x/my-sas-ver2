@@ -9,10 +9,16 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-                <div class="flex flex-row justify-between">
-                    <div class="bg-white shadow-xl p-5 rounded-md">
+                <div class="flex flex-row justify-start">
+                    <div class="bg-white shadow-xl p-5 rounded-md mx-2">
                         <h4 class="text-xl text-blue-700">Total Quantity</h4>
                         <div class="text-gray-600">{{ inventory.available_quantity }} {{ inventory.unit }}</div>
+                    </div>
+
+                    <div class="bg-white shadow-xl p-5 rounded-md mx-2">
+                        <h4 class="text-xl text-blue-700">Total Value</h4>
+                        <div class="text-gray-600">{{ totalValue }}<span class="px-1">NZD</span></div>
+                        <inertia-link :href="'/inventory/'+inventory.id+'/summary'" class="text-xs">More details ></inertia-link>
                     </div>
                 </div>
 
@@ -98,7 +104,8 @@
                                         {{ stock.in }}
                                     </div>
                                     <div v-if="stock.invoice_item">
-                                        <a class="cursor-pointer text-blue-500 text-sm" @click="showInvoice(stock.invoice_item.invoice.id)">
+                                        <a class="cursor-pointer text-blue-500 text-sm"
+                                           @click="showInvoice(stock.invoice_item.invoice.id)">
                                             #{{ stock.invoice_item.invoice.invoice_number }}
                                         </a>
                                     </div>
@@ -151,27 +158,88 @@
                 </div>
             </div>
         </div>
-        <dialog-modal :show="showAdjustmentWindow">
+        <dialog-modal :show="showAdjustmentWindow" :max-width="'3xl'" >
             <template #title>
                 Stock Adjustment
             </template>
 
             <template #content>
-                <div class="grid grid-cols-6 gap-6">
-                    <div class="col-span-6 sm:col-span-3">
+                <div class="flex flex-row justify-center py-5">
+                    <div class="w-1/2">
                         <label for="reason" class="block text-sm font-medium text-gray-700">Reason</label>
                         <input v-model="adjustment.reason" type="text" name="reason" id="reason"
                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                     </div>
+                </div>
 
-                    <div class="col-span-3 sm:col-span-2">
-                        <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
-                        <el-tooltip content="Add '-' before qty to decrease stock" placement="top">
-                            <input v-model.number="adjustment.quantity" type="text" name="quantity" id="quantity"
-                               autocomplete="given-name"
-                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                        </el-tooltip>
-                    </div>
+                <div>
+                    <el-row :gutter="20" v-for="(item, index) in adjustment.invoice_usages" :key="index">
+                        <el-col :span="2">
+                            <div class="mt-5">
+                                <form-button type="button" button-type="textOnly" @click.native="addStockItemInvoice"
+                                             :disabled="index !== adjustment.invoice_usages.length - 1">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                              clip-rule="evenodd"></path>
+                                    </svg>
+                                </form-button>
+                            </div>
+                        </el-col>
+                        <el-col :span="10">
+                            <div>
+                                <label class="text-base font-medium text-gray-700">
+                                    Invoice Number
+                                </label>
+                                <app-select
+                                    placeholder="Select invoice number"
+                                    option-label="invoice_number"
+                                    option-value="id"
+                                    :filterable="true"
+                                    :options="invoices"
+                                    v-model="item.invoice"
+                                ></app-select>
+                            </div>
+                        </el-col>
+                        <el-col :span="10">
+                            <div>
+                                <label class="text-base font-medium text-gray-700">
+                                    Usage
+                                </label>
+                                <div>
+                                    <div class="flex flex-wrap items-stretch w-full mb-4 relative">
+                                        <div class="flex -mr-px">
+                                            <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">
+                                                <template>
+                                                    m
+                                                </template>
+                                            </span>
+                                        </div>
+                                        <el-tooltip content="Add '-' before qty to decrease stock" placement="top">
+                                        <input type="text"
+                                               class="flex-shrink flex-grow flex-auto leading-normal w-20 flex-1 h-10 border-gray-300 rounded-md rounded-l-none focus:ring-indigo-500 focus:border-indigo-500 px-3 relative"
+                                               placeholder="0.00"
+                                               id="sub_total-value"
+                                               v-model.number="item.usage">
+                                        </el-tooltip>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-col>
+                        <el-col :span="2">
+                            <div class="mt-5">
+                                <danger-button type="button" button-type="textOnly" :disabled="index === 0"
+                                               @click.native="removeStockItemInvoice(index)">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                              clip-rule="evenodd"></path>
+                                    </svg>
+                                </danger-button>
+                            </div>
+                        </el-col>
+                    </el-row>
                 </div>
             </template>
 
@@ -196,6 +264,9 @@
 import DialogModal from "@/Jetstream/DialogModal";
 import Paginator from "@/UIElements/Paginator";
 import Notify from "@/UIElements/Notify";
+import AppSelect from "@/UIElements/AppSelect";
+import DangerButton from "@/Jetstream/DangerButton";
+import FormButton from "@/UIElements/FormButton";
 
 export default {
     name: "InventoryShow",
@@ -208,35 +279,55 @@ export default {
             type: Object,
             required: true
         },
-        stockReserv: {
-            type: Object,
-            required: true
+        invoices: {
+            required: true,
+            type: Array
+        },
+        totalValue: {
+            required: true,
+            type: Number
         }
     },
     components: {
         DialogModal,
         Paginator,
-        Notify
+        Notify,
+        AppSelect,
+        DangerButton,
+        FormButton
     },
     data() {
         return {
             showAdjustmentWindow: false,
             adjustment: {
                 reason: '',
-                quantity: null,
+                invoice_usages: [],
             }
         }
     },
+    mounted() {
+        this.adjustment.invoice_usages = [{invoice:{}, usage:null}];
+    },
     methods: {
         adjust() {
+            // console.log(this.adjustment)
             this.$inertia.post(`/inventory/${this.inventory.id}/adjust`, this.adjustment).then(function ({data}) {
                 this.showAdjustmentWindow = false
             }).catch(error => {
                 this.showAdjustmentWindow = false
             })
         },
+        addStockItemInvoice() {
+            let lestIndex = this.adjustment.invoice_usages.length - 1;
+            this.adjustment.invoice_usages.push({invoice:{}, usage:null})
+        },
+        removeStockItemInvoice(index) {
+            if (index > 0) {
+                this.adjustment.invoice_usages.splice(index, 1)
+            }
+        },
         showInvoice(id) {
-            this.$inertia.visit('/invoices/'+id);
+            this.$inertia.visit('/invoices/' + id);
         },
         showTotalPrice(price) {
             return price === 0 ? '' : price;

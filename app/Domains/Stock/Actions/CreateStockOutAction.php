@@ -36,7 +36,6 @@ class CreateStockOutAction
         foreach ($items as $item) {
             $totalUsage = 0;
             foreach ($item->invoices as $invoice) {
-
                 $totalUsage = $totalUsage + $invoice->usage;
             }
 
