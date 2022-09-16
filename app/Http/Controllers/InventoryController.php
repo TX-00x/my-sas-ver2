@@ -93,6 +93,7 @@ class InventoryController extends Controller
             'inventorySummary' => InventorySummary::query()
                 ->where('material_inventory_id', $materialInventory->id)
                 ->with('materialInvoice')
+                ->orderBy('updated_at', 'DESC')
                 ->paginate(15)
                 ->withQueryString(),
         ]);
