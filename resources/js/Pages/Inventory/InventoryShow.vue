@@ -310,7 +310,6 @@ export default {
     },
     methods: {
         adjust() {
-            // console.log(this.adjustment)
             this.$inertia.post(`/inventory/${this.inventory.id}/adjust`, this.adjustment).then(function ({data}) {
                 this.showAdjustmentWindow = false
             }).catch(error => {
