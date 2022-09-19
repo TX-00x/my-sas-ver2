@@ -120,6 +120,8 @@ class StockOutController extends Controller
 
         $materialInventory = null;
         $stockAvailable = false;
+        $invoices = [];
+
         if ($materialVariation && $factoryId != "" && $supplierId != "") {
             $materialInventory = MaterialInventory::where('material_variation_id', $materialVariation->id)
                 ->where('factory_id', $factoryId)
@@ -129,9 +131,12 @@ class StockOutController extends Controller
             if ($request->filled('supplier_id') && $materialInventory) {
                 $stockAvailable = true;
             }
-        }
 
-        $invoices = MaterialInvoice::query()->select('id','invoice_number')->get();
+            $invoices = MaterialInvoice::query()
+                ->where('supplier_id',$supplierId)
+                ->where('factory_id',$factoryId)
+                ->select('id','invoice_number')->get();
+        }
 
         return Inertia::render('StockOut/Create', [
             'factories' => $factories,
