@@ -84,7 +84,7 @@
                     </div>
                     <div class="p-5 relative flex flex-row justify-center">
                         <div class="px-4 py-3 sm:px-6">
-                            <form-button type="button" @handle-on-click="showStockOutModal = !showStockOutModal">
+                            <form-button type="button" :disabled="handleAddItems" @handle-on-click="showStockOutModal = !showStockOutModal">
                                 Add item
                             </form-button>
                         </div>
@@ -523,10 +523,24 @@ export default {
                 this.setItemsReadOnly()
             }
         },
+        triggerInvoiceUsageErrorMessage() {
+            this.showTotalInvoiceUsageError = true
+            setTimeout(() => {
+                this.showTotalInvoiceUsageError = false
+            }, 4000)
+        },
         addStockItemInvoice() {
-            let lastIndex = this.stockOutItem.invoice_usages.length - 1;
-            let calculatedUsage = this.stockOutItem.usage - this.stockOutItem.invoice_usages[lastIndex].usage
-            this.stockOutItem.invoice_usages.push({invoice:{}, usage:calculatedUsage})
+            let totalInvoiceUsage = 0;
+            this.stockOutItem.invoice_usages.forEach((element) => {
+                totalInvoiceUsage = totalInvoiceUsage + parseInt(element.usage)
+            });
+            let calculatedUsage = this.stockOutItem.usage - totalInvoiceUsage
+            if(calculatedUsage > 0) {
+                this.showTotalInvoiceUsageError = false
+                this.stockOutItem.invoice_usages.push({invoice:{}, usage:calculatedUsage})
+            } else {
+                this.triggerInvoiceUsageErrorMessage()
+            }
         },
         removeStockItemInvoice(index) {
             if (index > 0) {
@@ -694,10 +708,6 @@ export default {
             if (totalInvoiceUsage <= this.stockOutItem.usage) {
                 this.showTotalInvoiceUsageError = false
             }
-
-            // switch (true) {
-            //     case (totalInvoiceUsage > this.stockOutItem.usage)
-            // }
         },
         isValidItem() {
             return true;
@@ -710,6 +720,18 @@ export default {
         },
         setItemsReadOnly() {
             this.isItemReadOnly = true;
+        },
+    },
+    computed: {
+        handleAddItems() {
+            if (
+                this.stockOut.order_public_id === null
+                || this.stockOut.customer_id === null
+                || this.stockOut.factory_id === null) {
+                return true
+            } else {
+                return false
+            }
         },
     }
 }
