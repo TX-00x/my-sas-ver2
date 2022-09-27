@@ -10,6 +10,7 @@ use App\Http\Controllers\CustomizedStylesController;
 use App\Http\Controllers\InventoryAdjustmentController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SettingsItemTypesController;
 use App\Http\Controllers\MaterialSupplierController;
 use App\Http\Controllers\NewCustomizedStylesController;
@@ -228,4 +229,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/approve-purchase-order/{materialPurchaseOrder}', \App\Http\Controllers\ApprovePurchaseOrderController::class)->name('purchase.orders.approve');
     Route::post('/reject-purchase-order/{materialPurchaseOrder}', \App\Http\Controllers\RejectPurchaseOrderController::class)->name('purchase.orders.reject');
     Route::resource('stock-out', \App\Http\Controllers\StockOutController::class, ['names' => 'stock.out']);
+
+    Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
+    Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
 });
