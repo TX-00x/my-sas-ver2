@@ -131,6 +131,10 @@
                                 </div>
 
 
+                                <jet-nav-link :href="route('quotations.index')" :active="route().current('quotations.*')">
+                                    Quotations
+                                </jet-nav-link>
+
                             </div>
                         </div>
 
