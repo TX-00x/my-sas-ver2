@@ -249,6 +249,7 @@
                                                             :options="invoices"
                                                             v-model="item.invoice"
                                                             @input="styleSelected"
+                                                            @change="changeAddStockItemButtonStatus"
                                                         ></app-select>
                                                     </div>
                                                 </el-col>
@@ -297,10 +298,18 @@
                                     <danger-button button-type="textOnly" type="button" @click.native="resetStockOutItem">
                                         Reset form
                                     </danger-button>
-                                    <div v-show="showTotalInvoiceUsageError" class="text-sm text-red-600 font-bold">
-                                        Total invoice usage is greater than requested total usage!
+                                    <div class="flex flex-col">
+                                        <div v-show="showTotalInvoiceUsageError" class="text-sm text-red-600 font-bold">
+                                            Total invoice usage is greater than requested total usage!
+                                        </div>
+                                        <div v-show="stockItemErrors" class="text-sm text-red-600 font-bold">
+                                            Invalid inputs entered. Please check the form and submit again.
+                                        </div>
+                                        <div v-show="stockItemSuccess" class="text-sm text-green-600 font-bold">
+                                            Item added successfully
+                                        </div>
                                     </div>
-                                    <form-button :disabled="!stockAvailable" :class="{'opacity-25': !stockAvailable}" type="button" @handle-on-click="handleAddStockItems">
+                                    <form-button :disabled="!handleAddItemButtonAvailability" :class="{'opacity-25': !handleAddItemButtonAvailability}" type="button" @handle-on-click="handleAddStockItems">
                                         Add item
                                     </form-button>
                                 </div>
@@ -508,6 +517,9 @@ export default {
             resetSelectOptions: false,
             isItemReadOnly: false,
             showTotalInvoiceUsageError: false,
+            stockItemErrors: false,
+            stockItemSuccess: false,
+            addStockItembutton:true,
         }
     },
     mounted() {
@@ -529,6 +541,12 @@ export default {
                 this.showTotalInvoiceUsageError = false
             }, 4000)
         },
+        triggerInvoiceUsageSuccessMessage() {
+            this.stockItemSuccess = true
+            setTimeout(() => {
+                this.stockItemSuccess = false
+            }, 4000)
+        },
         addStockItemInvoice() {
             let totalInvoiceUsage = 0;
             this.stockOutItem.invoice_usages.forEach((element) => {
@@ -547,12 +565,44 @@ export default {
                 this.stockOutItem.invoice_usages.splice(index, 1)
             }
         },
+        changeAddStockItemButtonStatus(value) {
+            if (value === "" || value === null || value === {}) {
+                this.addStockItembutton = false
+            }
+        },
         handleAddStockItems() {
-            if (this.isValidItem()) {
+            this.stockOutItem.invoice_usages.forEach((element) => {
+                if(Object.keys(element.invoice).length === 0 || element.usage === null) {
+                    this.stockItemErrors = true
+                }
+            });
+
+            let fields = [
+                this.stockOutItem.style_id,
+                this.stockOutItem.style_panel_id,
+                this.stockOutItem.material_id,
+                this.stockOutItem.colour_id,
+                this.stockOutItem.pieces,
+                this.stockOutItem.usage
+            ];
+
+            fields.forEach((field) => {
+                if (field == null || field === "") {
+                    this.stockItemErrors = true
+                    setTimeout(() => {
+                        this.stockItemErrors = false
+                    }, 4000)
+
+                    return true;
+                }
+            });
+
+            if (this.isValidItem() && !this.stockItemErrors) {
                 this.stockOut.items.push(this.stockOutItem);
                 if (this.stockOut.order_public_id !== null || this.stockOut.order_public_id !== ''){
                     this.lockFieldsInStockOut();
                 }
+                this.triggerInvoiceUsageSuccessMessage();
                 this.resetStockOutItem();
             }
         },
@@ -692,14 +742,13 @@ export default {
         recalculateErrorMessage(value, index) {
             if (value === "") {
                 this.stockOutItem.invoice_usages[index].usage = 0
+                this.addStockItembutton = false
             }
 
             let totalInvoiceUsage = 0;
             this.stockOutItem.invoice_usages.forEach((element) => {
                 totalInvoiceUsage = totalInvoiceUsage + parseInt(element.usage)
             });
-
-            console.log(totalInvoiceUsage)
 
             if (totalInvoiceUsage > this.stockOutItem.usage) {
                 this.showTotalInvoiceUsageError = true
@@ -715,8 +764,6 @@ export default {
                 alert("Invalid usage");
                 return false;
             }
-
-
         },
         setItemsReadOnly() {
             this.isItemReadOnly = true;
@@ -733,6 +780,13 @@ export default {
                 return false
             }
         },
+        handleAddItemButtonAvailability(){
+            if (!this.stockAvailable ) {
+              return false
+            }
+
+            return true
+        }
     }
 }
 </script>
