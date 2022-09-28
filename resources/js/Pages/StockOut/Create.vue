@@ -550,7 +550,7 @@ export default {
         addStockItemInvoice() {
             let totalInvoiceUsage = 0;
             this.stockOutItem.invoice_usages.forEach((element) => {
-                totalInvoiceUsage = totalInvoiceUsage + parseInt(element.usage)
+                totalInvoiceUsage = totalInvoiceUsage + parseFloat(element.usage)
             });
             let calculatedUsage = this.stockOutItem.usage - totalInvoiceUsage
             if(calculatedUsage > 0) {
