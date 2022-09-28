@@ -321,7 +321,7 @@
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.no_of_setups}}
+                                            <el-input placeholder="No of setup" v-model="sublimations.no_of_setups"></el-input>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap"v-show="!account_payment">
