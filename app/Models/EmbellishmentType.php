@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class EmbellishmentType extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['type'];
+
+    public function embellishmentStyles()
+    {
+        return $this->hasMany(EmbellishmentStyle::class);
+    }
 }

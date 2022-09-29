@@ -11,6 +11,7 @@ use App\Http\Controllers\InventoryAdjustmentController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\SettingsEmbellishmentsController;
 use App\Http\Controllers\SettingsItemTypesController;
 use App\Http\Controllers\MaterialSupplierController;
 use App\Http\Controllers\NewCustomizedStylesController;
@@ -138,6 +139,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/settings/item-types/{itemType}', function (){
         return back()->with(['message' => 'Not allowed']);
     })->name('settings.item-types.delete');
+
+    Route::get('/settings/embellishments', [SettingsEmbellishmentsController::class, 'index'])->name('settings.embellishments.index');
+    Route::get('/settings/embellishments/create', [SettingsEmbellishmentsController::class, 'create'])->name('settings.embellishments.create');
+    Route::post('/settings/embellishments', [SettingsEmbellishmentsController::class, 'store'])->name('settings.embellishments.store');
 
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');

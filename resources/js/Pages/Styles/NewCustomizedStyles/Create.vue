@@ -13,6 +13,7 @@
         </template>
 
         <div class="py-12">
+
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="mb-5">
                     <el-alert
@@ -45,7 +46,7 @@
                                         <label for="dropzone-file"
                                                :class="{'bg-contain bg-center bg-no-repeat' : uploadFieldNotEmpty}" :style="{ backgroundImage: 'url('+url+')'}"
                                                class="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                            <div class="flex flex-col justify-center items-center pt-5 pb-6">
+                                            <div class="flex flex-col justify-center items-center pt-5 pb-6" v-if="url === ''">
                                                 <svg class="mb-3 w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                                                 <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span></p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">JPEG, JPG or PNG</p>
@@ -106,6 +107,7 @@
                                 :colours="colours"
                                 :item-types="itemTypes"
                                 :sizes="sizes"
+                                :embellishments="embellishments"
                                 :factories="factories"
                                 v-model="styleForm"
                                 :errors="errors"
@@ -157,6 +159,10 @@ export default {
             type: Array,
             required: true
         },
+        embellishments: {
+            type: Array,
+            required: true
+        },
         factories: {
             type: Array,
             required: true
@@ -177,9 +183,6 @@ export default {
             type: Array,
             required: true
         },
-        parentStyleCode: {
-            type: Object
-        },
         styleType: {
             type: String
         },
@@ -188,6 +191,10 @@ export default {
         },
         colours:{
             type: Array,
+            required: true,
+        },
+        assetUrl: {
+            type: String,
             required: true,
         }
     },
@@ -218,10 +225,6 @@ export default {
     mounted() {
         this.styleForm.styles_type = "General"
         this.styleForm = this.styleData
-        if (this.parentStyleCode !== null && (typeof this.parentStyleCode  != 'undefined')) {
-            this.styleForm = this.parentStyleCode;
-            this.styleForm.parent_style_code = this.parentStyleCode.code;
-        }
 
         if (this.styleType != null) {
             this.styleForm.styles_type = this.styleType
@@ -236,11 +239,24 @@ export default {
         if ( this.styleForm.style_image === "" || this.styleForm.style_image == null) {
             this.url = ''
         } else {
-            this.url = this.styleForm.style_image;
+            this.url = this.assetUrl+this.styleForm.style_image;
         }
 
-        if (typeof(this.styleForm.parent_style) != 'undefined') {
-            this.styleForm.parent_style_code = this.styleForm.parent_style.code;
+        if (this.styleForm.embellishments_form.length > 0) {
+            let newEmbellishmentArr = [];
+            for (const [index, embellishmentsKey] of this.styleForm.embellishments_form.entries()) {
+                newEmbellishmentArr[index] = {
+                    id:embellishmentsKey.id,
+                    image: "",
+                    image_url: embellishmentsKey.public_image_path,
+                    position: { name:this.capitalizeFirstLetter(embellishmentsKey.position), value: embellishmentsKey.position },
+                    type: embellishmentsKey.embellishment_type,
+                    already_uploaded: true
+                }
+            }
+
+            this.styleForm.embellishments_form.length = 0
+            this.styleForm.embellishments_form = newEmbellishmentArr.slice();
         }
     },
     methods: {
@@ -273,7 +289,11 @@ export default {
             this.$inertia.post('/new-customized-styles', this.styleForm)
         },
         update() {
-            this.$inertia.put('/new-customized-styles/' + this.styleForm.id, this.styleForm)
+            if (this.$refs.style_code_image) {
+                this.styleForm.image = this.$refs.style_code_image.files[0];
+            }
+            this.styleForm._method = 'put'
+            this.$inertia.post('/new-customized-styles/' + this.styleForm.id, this.styleForm)
         },
         setSelectedStyleCode(value) {
             this.$inertia.visit(this.$inertia.page.url, {
@@ -342,6 +362,9 @@ export default {
         setUploadFieldEmpty(){
             this.url = '';
             this.$refs.style_code_image.value = null;
+        },
+        capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         }
     },
     computed: {
