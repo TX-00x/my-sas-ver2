@@ -76,4 +76,9 @@ class Style extends Model implements Auditable
     {
         return $this->belongsTo(Style::class, 'parent_style_id');
     }
+
+    public function embellishments()
+    {
+        return $this->hasMany(EmbellishmentStyle::class);
+    }
 }

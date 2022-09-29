@@ -33,6 +33,9 @@ class Style extends DataTransferObject
     #[CastWith(FactoryCaster::class)]
     public ?array $factories;
 
+    #[CastWith(EmbellishmentCaster::class)]
+    public ?array $embellishments_form;
+
     /** @var \App\Domains\Styles\Dto\Panel[] */
     #[CastWith(PanelCaster::class)]
     public ?array $panels;
