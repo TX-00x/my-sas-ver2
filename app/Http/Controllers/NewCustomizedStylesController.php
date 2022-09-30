@@ -8,6 +8,7 @@ use App\Domains\Styles\Dto\Style as StyleDto;
 use App\Http\Requests\Styles\StyleStoreRequest;
 use App\Http\Requests\Styles\StyleUpdateRequest;
 use App\Models\Colour;
+use App\Models\EmbellishmentType;
 use App\Models\Factory;
 use App\Models\MaterialVariation;
 use App\Models\Style;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class NewCustomizedStylesController extends Controller
@@ -61,7 +63,7 @@ class NewCustomizedStylesController extends Controller
         $sizes = $sizeRepository->getAll();
         $materials = $materialRepository->getAll();
         $styles = Style::all('id', 'code', 'name')->toArray();
-        $colours = '';
+        $colours = [];
 
         $parent_style_code = null;
 
@@ -81,10 +83,10 @@ class NewCustomizedStylesController extends Controller
             $colours = Colour::query()->whereIn('id', $colourIds)->get();
         }
 
-
         $style = new StyleDto([
             'sizes' => [],
             'panels' => [],
+            'embellishments_form' => [],
             'belongs_to' => 'internal'
         ]);
 
@@ -94,6 +96,7 @@ class NewCustomizedStylesController extends Controller
             'categories' => $categories,
             'itemTypes' => $itemTypes,
             'sizes' => $sizes,
+            'embellishments' => EmbellishmentType::all(),
             'factories' => $factories,
             'materials' => $materials,
             'styles' => $styles,
@@ -138,8 +141,10 @@ class NewCustomizedStylesController extends Controller
         $sizes = $sizeRepository->getAll();
         $materials = $materialRepository->getAll();
 
-        $style->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer', 'parentStyle', 'panels.color']);
+        $style->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer', 'parentStyle', 'panels.color', 'embellishments.embellishmentType']);
         $styleDto = new StyleDto($style->toArray());
+
+        $styleDto->embellishments_form = $style->embellishments->toArray();
 
         $material_ids = [];
 
@@ -163,9 +168,11 @@ class NewCustomizedStylesController extends Controller
             'categories' => $categories,
             'itemTypes' => $itemTypes,
             'sizes' => $sizes,
+            'embellishments' => EmbellishmentType::all(),
             'factories' => $factories,
             'materials' => $materials,
             'colours' => $avail_materials_colours,
+            'assetUrl' => Storage::url('')
         ]);
     }
 

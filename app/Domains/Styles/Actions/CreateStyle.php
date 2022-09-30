@@ -5,6 +5,7 @@ namespace App\Domains\Styles\Actions;
 
 use App\Domains\Styles\Dto\CustomizedStyle;
 use App\Domains\Styles\Dto\Style;
+use App\Models\EmbellishmentStyle;
 use App\Models\Style as StyleModel;
 
 class CreateStyle
@@ -69,6 +70,18 @@ class CreateStyle
                 foreach ($styleDto->customized_panels as $panel) {
                     $this->attachPanelToCustomStyle->execute($style, $panel);
                 }
+            }
+        }
+
+        if ($styleDto->embellishments_form) {
+            foreach ($styleDto->embellishments_form as $embellishments) {
+                $embellishmentStyle = new EmbellishmentStyle();
+                $image_path = $embellishments->image->store('style_images', 'public');
+                $embellishmentStyle->image_path = $image_path;
+                $embellishmentStyle->embellishment_id = $embellishments->type['id'];
+                $embellishmentStyle->position = $embellishments->position['value'];
+
+                $style->embellishments()->save($embellishmentStyle);
             }
         }
 

@@ -35,17 +35,40 @@ class PurchaseOrderController extends Controller
 
         $factories = Factory::all()->toArray();
 
-        $purchase_orders = MaterialPurchaseOrder::query()
-            ->with(['supplier', 'assignedFactory', 'user'])
-            ->when($factory, function ($query, $factory) {
-                return $query->where('factory_id', $factory);
-            })
-            ->when($status, function ($query, $status) {
-                return $query->where('evaluation_status', $status);
-            })
-            ->orderBy("created_at", "DESC")
-            ->paginate()
-            ->appends($request->except(['page', '_token']));
+        $q = $request->get('q');
+
+        if ($status == 'Completed') {
+            $purchase_orders = MaterialPurchaseOrder::onlyTrashed()
+                ->with(['supplier', 'assignedFactory', 'user'])
+                ->when($q, function ($query, $orderNumber) {
+                    return $query->where('id', $orderNumber);
+                })
+                ->when($factory, function ($query, $factory) {
+                    return $query->where('factory_id', $factory);
+                })
+                ->when($status, function ($query) {
+                    return $query->where('evaluation_status', 'Approved');
+                })
+                ->orderBy("created_at", "DESC")
+                ->paginate()
+                ->appends($request->except(['page', '_token']));
+        } else {
+
+            $purchase_orders = MaterialPurchaseOrder::query()
+                ->with(['supplier', 'assignedFactory', 'user'])
+                ->when($q, function ($query, $orderNumber) {
+                    return $query->where('id', $orderNumber);
+                })
+                ->when($factory, function ($query, $factory) {
+                    return $query->where('factory_id', $factory);
+                })
+                ->when($status, function ($query, $status) {
+                    return $query->where('evaluation_status', $status);
+                })
+                ->orderBy("created_at", "DESC")
+                ->paginate()
+                ->appends($request->except(['page', '_token']));
+        }
 
         return Inertia::render(
             'PurchaseOrder/Index',
@@ -176,5 +199,35 @@ class PurchaseOrderController extends Controller
             ]
         );
 
+    }
+
+    public function showCompleted(MaterialPurchaseOrder $purchase_order)
+    {
+        $purchase_order->load('items', 'supplier', 'assignedFactory');
+
+        $materials = Materials::all();
+        $colours = Colour::all();
+        $suppliers = Supplier::all();
+
+        $unitCollection = Unit::all();
+        $units = SelectOptions::selectOptionsObject($unitCollection, 'type', 'name');
+
+        $factories = Factory::all();
+
+        $currencies = Currency::all();
+
+
+        return Inertia::render(
+            'PurchaseOrder/View',
+            [
+                'factories' => $factories,
+                'materials' => $materials,
+                'colours' => $colours,
+                'suppliers' => $suppliers,
+                'units' => $units,
+                'currencies' => $currencies,
+                'purchaseOrder' => $purchase_order
+            ]
+        );
     }
 }
