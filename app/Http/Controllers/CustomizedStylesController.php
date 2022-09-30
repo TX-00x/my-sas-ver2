@@ -9,6 +9,8 @@ use App\Domains\Styles\Dto\CustomizedStyle as StyleDto;
 use App\Http\Requests\Styles\StyleStoreRequest;
 use App\Http\Requests\Styles\StyleUpdateRequest;
 use App\Models\Colour;
+use App\Models\EmbellishmentStyle;
+use App\Models\EmbellishmentType;
 use App\Models\Factory;
 use App\Models\Style;
 use App\Models\StylePanel;
@@ -22,6 +24,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CustomizedStylesController extends Controller
@@ -99,12 +102,13 @@ class CustomizedStylesController extends Controller
                 ->get();
 
             $colours = $avail_materials_colours;
-
+            $parentStyleCode->embellishments_form = [];
         }
 
         $style = new StyleDto([
             'sizes' => [],
             'panels' => [],
+            'embellishments_form' => [],
             'belongs_to' => 'internal'
         ]);
 
@@ -114,6 +118,7 @@ class CustomizedStylesController extends Controller
             'categories' => $categories,
             'itemTypes' => $itemTypes,
             'sizes' => $sizes,
+            'embellishments' => EmbellishmentType::all(),
             'factories' => $factories,
             'materials' => $materials,
             'styles' => $styles,
@@ -159,9 +164,12 @@ class CustomizedStylesController extends Controller
         $colours = Colour::query()->get();
 
 
-        $style->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer', 'parentStyle','panels.color']);
+        $style->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer', 'parentStyle','panels.color', 'embellishments.embellishmentType']);
         $style->load(['panels.fabrics.variations.colour']);
+//        dd($style->customer);
+
         $styleDto = new StyleDto($style->toArray());
+        $styleDto->embellishments_form = $style->embellishments->toArray();
 
         $parent_style_code = Style::find($style->parent_style_id);
         $parent_style_code->load(['itemType', 'categories', 'sizes', 'factories', 'panels.consumption', 'customer']);
@@ -193,19 +201,18 @@ class CustomizedStylesController extends Controller
             );
         }
 
+//        $parentStyleCode->embellishments_form = [];
+
         return Inertia::render('Styles/CustomizedStyles/Edit', [
             'styleData' => $styleDto,
-            'customers' => $style->customer,
-            'customer' => $style->customer->id,
-            'categories' => $parent_style_code->categories,
-            'itemTypes' => $parent_style_code->itemType,
-            'sizes' => $parent_style_code->sizes,
             'factories' => $parent_style_code->factories,
             'materials' => $materials,
             'colours' => $colours,
             'parentStyle' => $parent_style_code,
             'thisStyle' => $style,
-            'selectedPanels' => $selectedPanels
+            'selectedPanels' => $selectedPanels,
+            'embellishments' => EmbellishmentType::all(),
+            'assetUrl' => Storage::url('')
         ]);
     }
 
@@ -216,7 +223,8 @@ class CustomizedStylesController extends Controller
                 'customized_panels' => 'sometimes|array',
                 'customized_panels.*.colourId' => 'integer',
                 'customized_panels.*.fabricId' => 'integer',
-                'customized_panels.*.id' => 'integer'
+                'customized_panels.*.id' => 'integer',
+                'embellishments_form' => 'sometimes',
             ]);
 
             foreach($request->customized_panels as $panel){
@@ -227,6 +235,40 @@ class CustomizedStylesController extends Controller
                    'default_fabric_id' => $panel['fabricId'],
                    'color_id' => $panel['colourId']
                ]);
+            }
+
+            if ($request->embellishments_form){
+                foreach($request->embellishments_form as $embellishment) {
+                    if(!$embellishment['already_uploaded'] && array_key_exists('id',$embellishment)){
+                        $dbRecord = $style->embellishments()->where('id', $embellishment['id'])->first();
+                        $image_path = $embellishment['image']->store('style_images', 'public');
+
+                        $dbRecord->update(['image_path' => $image_path]);
+                    }
+
+                    if ($embellishment['already_uploaded'] && array_key_exists('id',$embellishment)){
+                        $dbRecord = $style->embellishments()->where('id', $embellishment['id'])->first();
+
+                        $dbRecord->update([
+                            'embellishment_id' => $embellishment['type']['id'],
+                            'position' => $embellishment['position']['value']
+                        ]);
+                    }
+
+                    if (!array_key_exists('id',$embellishment)) {
+                        $embellishmentStyle = new EmbellishmentStyle();
+                        $image_path = $embellishment['image']->store('style_images', 'public');
+                        $embellishmentStyle->image_path = $image_path;
+                        $embellishmentStyle->embellishment_id = $embellishment['type']['id'];
+                        $embellishmentStyle->position = $embellishment['position']['value'];
+
+                        $style->embellishments()->save($embellishmentStyle);
+                    }
+                }
+            }
+
+            if (!$request->embellishments_form) {
+                $style->embellishments()->delete();
             }
 
             return Redirect::route('style.customized.index')
