@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('garment_prices', function (Blueprint $table) {
+        Schema::create('embellishments', function (Blueprint $table) {
             $table->id();
-            $table->string('style_code');
-            $table->decimal('garment_price');
+            $table->string('name');
+            $table->foreignId('embellishment_types_id')->constrained();
+            $table->decimal('embellishment_cost', 15,2);
+            $table->decimal('setup_cost', 15,2);
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('garment_prices');
+        Schema::dropIfExists('embellishments');
     }
 };

@@ -15,48 +15,48 @@
                     <div class="p-5">
                         <div class="grid grid-cols-3 gap-3">
                             <div>
-                                <el-select class="w-full" v-model="value" placeholder="Select customer">
+                                <el-select class="w-full" v-model="selected_customer" placeholder="Select customer">
                                     <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
+                                        v-for="item in customers"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
                             <div>
-                                <el-select class="w-full" v-model="value" placeholder="Select customer service person">
+                                <el-select class="w-full" v-model="selected_customer_service_person" placeholder="Select customer service person">
                                     <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
+                                        v-for="item in csAgents"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
                             <div class="flex flex-col justify-center items-center">
                                 <div class="py-1">Quotation type</div>
                                 <div>
-                                    <el-radio class="py-1" v-model="quotation_type" label="General"></el-radio>
+                                    <el-radio class="py-1" v-model="quotation_type" label="general">General</el-radio>
                                 </div>
                                 <div>
-                                    <el-radio class="py-1" v-model="quotation_type" label="Funding"></el-radio>
+                                    <el-radio class="py-1" v-model="quotation_type" label="funding">Funding</el-radio>
                                 </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-3 gap-3">
                             <div>
-                                <el-select class="w-full" v-model="value" placeholder="Team/Club/School">
+                                <el-select class="w-full" v-model="selected_customer_type" placeholder="Team/Club/School">
                                     <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
+                                        v-for="item in customerTypes"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
                             <div>
-                                <el-select class="w-full" v-model="value" placeholder="Customer sales person">
+                                <el-select class="w-full" v-model="selected_customer_sales_person" placeholder="Customer sales person">
                                     <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -89,7 +89,8 @@
                     <div class="p-5">
                         <div class="flex flex-row">
                             <div class="px-2">
-                                <el-checkbox v-model="account_payment" label="Send payment on 20th of the month"></el-checkbox>
+                                <el-checkbox v-model="account_payment"
+                                             label="Send payment on 20th of the month"></el-checkbox>
                             </div>
                         </div>
                     </div>
@@ -126,7 +127,8 @@
                                 <el-input placeholder="Quantity" v-model="garment_quantity"></el-input>
                             </div>
                             <div>
-                                <el-select @change="changeGarmentPrice" placeholder="Default Garment Price" v-model="selected_garment_price">
+                                <el-select @change="changeGarmentPrice" placeholder="Default Garment Price"
+                                           v-model="selected_garment_price">
                                     <el-option
                                         v-for="item in garment_price"
                                         :key="item.value"
@@ -138,7 +140,8 @@
                         </div>
                         <div class="grid grid-cols-4 gap-3 py-8">
                             <div>
-                                <el-select @change="showSetUpCostTable" v-model="selected_embellishment_type" placeholder="Select embellishment type">
+                                <el-select @change="showSetUpCostTable" v-model="selected_embellishment_type"
+                                           placeholder="Select embellishment type">
                                     <el-option
                                         v-for="item in embellishment_options"
                                         :key="item.value"
@@ -157,7 +160,8 @@
                             </div>
                             <div>
                                 <div class="flex flex-col">
-                                    <el-input :disabled="!editable_garment_price" placeholder="Garment price" v-model.number="garment_price_value"></el-input>
+                                    <el-input :disabled="!editable_garment_price" placeholder="Garment price"
+                                              v-model.number="garment_price_value"></el-input>
                                 </div>
                             </div>
                         </div>
@@ -204,48 +208,51 @@
                                 </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-if="cut_and_sew_embellishments_table.length > 0" v-for="sublimations in cut_and_sew_embellishments_table">
+                                <tr v-if="cut_and_sew_embellishments_table.length > 0"
+                                    v-for="sublimations in cut_and_sew_embellishments_table">
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment}}
+                                            {{ sublimations.embellishment }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment_cost}}
+                                            {{ sublimations.embellishment_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of embellishment" v-model="sublimations.no_of_embellishments"></el-input>
+                                            <el-input placeholder="No of embellishment"
+                                                      v-model="sublimations.no_of_embellishments"></el-input>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_embellishment_cost}}
+                                            {{ sublimations.total_embellishment_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.setup_cost}}
+                                            {{ sublimations.setup_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of setup" v-model="sublimations.no_of_setups"></el-input>
+                                            <el-input placeholder="No of setup"
+                                                      v-model="sublimations.no_of_setups"></el-input>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_setup_cost}}
+                                            {{ sublimations.total_setup_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[0]}}</el-button>
+                                            <el-button size="mini">{{ sublimations.actions[0] }}</el-button>
                                         </div>
                                         <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[1]}}</el-button>
+                                            <el-button size="mini">{{ sublimations.actions[1] }}</el-button>
                                         </div>
                                     </td>
                                 </tr>
@@ -293,48 +300,50 @@
                                 </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-if="sublimation_embellishments_table.length > 0" v-for="sublimations in sublimation_embellishments_table">
+                                <tr v-if="sublimation_embellishments_table.length > 0"
+                                    v-for="sublimations in sublimation_embellishments_table">
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment}}
+                                            {{ sublimations.embellishment }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment_cost}}
+                                            {{ sublimations.embellishment_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of embellishment" v-model="sublimations.no_of_embellishments"></el-input>
+                                            <el-input placeholder="No of embellishment"
+                                                      v-model="sublimations.no_of_embellishments"></el-input>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_embellishment_cost}}
+                                            {{ sublimations.total_embellishment_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.setup_cost}}
+                                            {{ sublimations.setup_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.no_of_setups}}
+                                            {{ sublimations.no_of_setups }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-3 whitespace-nowrap"v-show="!account_payment">
+                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_setup_cost}}
+                                            {{ sublimations.total_setup_cost }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[0]}}</el-button>
+                                            <el-button size="mini">{{ sublimations.actions[0] }}</el-button>
                                         </div>
                                         <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[1]}}</el-button>
+                                            <el-button size="mini">{{ sublimations.actions[1] }}</el-button>
                                         </div>
                                     </td>
                                 </tr>
@@ -347,10 +356,11 @@
                             <el-button type="primary">Add</el-button>
                         </div>
 
-                        <div id="cut_and_show_selected_items" class="flex flex-row justify-center" v-if="show_cut_and_sew_table">
+                        <div id="cut_and_show_selected_items" class="flex flex-row justify-center"
+                             v-if="show_cut_and_sew_table">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
-                                    <tr>
+                                <tr>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Style code
@@ -384,30 +394,31 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    <tr></tr>
-                                    <tr>
-                                        <td class="px-6 py-3 text-sm" colspan="3"></td>
-                                        <td class="px-6 py-3 text-sm">
-                                            <div class="text-sm font-medium text-gray-900 w-full">
-                                                Total of product price: <span class="text-lg">$0.00</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-3 text-sm">
-                                            <div class="text-sm font-medium text-gray-900">
-                                                Total of embellishment price: <span class="text-lg">$0.00</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-3 text-sm">
-                                            <div class="text-sm font-medium text-gray-900">
-                                                Total garment price: <span class="text-lg">$0.00</span>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                <tr></tr>
+                                <tr>
+                                    <td class="px-6 py-3 text-sm" colspan="3"></td>
+                                    <td class="px-6 py-3 text-sm">
+                                        <div class="text-sm font-medium text-gray-900 w-full">
+                                            Total of product price: <span class="text-lg">$0.00</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3 text-sm">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            Total of embellishment price: <span class="text-lg">$0.00</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3 text-sm">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            Total garment price: <span class="text-lg">$0.00</span>
+                                        </div>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
 
-                        <div id="sublimation_selected_items" class="flex flex-row justify-center" v-if="show_sublimation_table">
+                        <div id="sublimation_selected_items" class="flex flex-row justify-center"
+                             v-if="show_sublimation_table">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                 <tr>
@@ -488,7 +499,8 @@
                                     </el-select>
                                 </div>
                                 <div>
-                                    <div class="text-sm text-center">Cost per region: <span class="text-lg">$0.00</span></div>
+                                    <div class="text-sm text-center">Cost per region: <span class="text-lg">$0.00</span>
+                                    </div>
                                 </div>
                                 <div>
                                     <el-input placeholder="No of boxes" v-model.number="number_of_boxes"></el-input>
@@ -497,7 +509,8 @@
                                     Total freight charge: <span class="text-lg">$0.00</span>
                                 </div>
                                 <div>
-                                    <el-checkbox v-model="surcharge_applied" label="Apply 6% air freight surcharge"></el-checkbox>
+                                    <el-checkbox v-model="surcharge_applied"
+                                                 label="Apply 6% air freight surcharge"></el-checkbox>
                                 </div>
                             </div>
                         </div>
@@ -528,28 +541,51 @@
 <script>
 export default {
     name: "Create",
+    props: {
+        customers:{
+            required: true,
+            type: Array
+        },
+        customerTypes: {
+            required: true,
+            type: Array
+        },
+        csAgents: {
+            required: true,
+            type: Array
+        },
+        garmentPrices: {
+            required: true,
+            type: Array
+        },
+        embellishments: {
+            required: true,
+            type: Array
+        },
+        categories: {
+            required: true,
+            type: Array
+        },
+        embellishmentTypes: {
+            required: true,
+            type: Array
+        }
+    },
     data() {
         return {
-            options: [{
-                value: 'customer 1',
-                label: 'Customer 1'
-            },{
-                value: 'customer 2',
-                label: 'Customer 2'
-            },{
-                value: 'customer 3',
-                label: 'Customer 3'
-            }],
             embellishment_options: [{
                 value: 'cut and sew',
                 label: 'Cut and sew'
-            },{
+            }, {
                 value: 'sublimation',
                 label: 'Sublimation'
             }],
-            value: '',
+            selected_customer: null,
+            selected_customer_service_person:null,
+            selected_customer_sales_person:null,
+            selected_customer_type: null,
             garment_quantity: '',
-            quotation_type: 'General',
+            quotation_type: '',
             checked2: false,
             input: '',
             textarea: '',
@@ -559,7 +595,7 @@ export default {
             garment_price: [{
                 value: 'default garment price',
                 label: 'Default garment price'
-            },{
+            }, {
                 value: 'custom garment price',
                 label: 'Custom garment price'
             }],
@@ -638,7 +674,7 @@ export default {
                     actions: ['Edit', 'Clear']
                 }
             ],
-            sublimation_embellishments_table:[
+            sublimation_embellishments_table: [
                 {
                     embellishment: 'Sublimation',
                     embellishment_cost: 0,
@@ -650,7 +686,7 @@ export default {
                     actions: ['Edit', 'Clear']
                 }
             ],
-            freight_charge_region:[{
+            freight_charge_region: [{
                 value: 'nothern region',
                 label: 'Northern Region'
             }],
@@ -669,7 +705,7 @@ export default {
 
             if (this.selected_embellishment_type === 'sublimation') {
                 this.show_sublimation_table = true
-                this.show_cut_and_sew_table =  false
+                this.show_cut_and_sew_table = false
             }
         },
         changeGarmentPrice(value) {

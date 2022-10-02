@@ -7,8 +7,13 @@ use App\Models\Category;
 use App\Models\Colour;
 use App\Models\Country;
 use App\Models\Customer;
+use App\Models\CustomerType;
+use App\Models\Embellishment;
+use App\Models\EmbellishmentType;
 use App\Models\Factory;
 use App\Models\File;
+use App\Models\FreightChargesRegion;
+use App\Models\GarmentPrice;
 use App\Models\InventoryIn;
 use App\Models\ItemType;
 use App\Models\MaterialInventory;
@@ -99,6 +104,7 @@ class DatabaseSeeder extends Seeder
 
         Customer::factory()->create([
             'name' => 'John Doe',
+            'email' => 'john@example.com',
             'cs_agent_id' => $csAgent->id,
             'sales_agent_id' => $salesAgent->id,
             'logo_id' => $logo1->id
@@ -106,6 +112,7 @@ class DatabaseSeeder extends Seeder
 
         Customer::factory()->create([
             'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
             'cs_agent_id' => $csAgent->id,
             'sales_agent_id' => $salesAgent->id,
             'logo_id' => $logo2->id
@@ -320,6 +327,8 @@ class DatabaseSeeder extends Seeder
             'currency' => 'nzd'
         ]);
 
+        $adminUser = User::query()->where('email', 'admin@example.com')->first();
+
         $lightDritechBlackInventory = MaterialInventory::factory()->create([
             'material_variation_id' => $lightDritechBlack->id,
             'unit' => 'm',
@@ -328,6 +337,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 500,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => $adminUser->id
         ]);
 
         $lightDritechGreenInventory = MaterialInventory::factory()->create([
@@ -338,6 +348,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 1000,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => $adminUser->id
         ]);
 
         Currency::factory()->create([
@@ -354,7 +365,101 @@ class DatabaseSeeder extends Seeder
         ]);
         \App\Domains\PurchaseOrder\Models\MaterialPurchaseOrder::factory()->withItems(3)->count(55)->create();
 
+        $cutAndSew = EmbellishmentType::factory()->create([
+            'type' => 'Cut and Sew'
+        ]);
 
+        $sublimation = EmbellishmentType::factory()->create([
+            'type' => 'Sublimation'
+        ]);
 
+        Embellishment::factory()->create([
+            'name' => 'Heat Transfer',
+            'embellishment_types_id' => $cutAndSew->id,
+            'embellishment_cost' => 10.00,
+            'setup_cost' => 5.00
+        ]);
+
+        Embellishment::factory()->create([
+            'name' => 'Screen Print',
+            'embellishment_types_id' => $cutAndSew->id,
+            'embellishment_cost' => 15.00,
+            'setup_cost' => 5.00
+        ]);
+
+        Embellishment::factory()->create([
+            'name' => 'Embroidery',
+            'embellishment_types_id' => $cutAndSew->id,
+            'embellishment_cost' => 15.00,
+            'setup_cost' => 5.00
+        ]);
+
+        Embellishment::factory()->create([
+            'name' => 'Applique',
+            'embellishment_types_id' => $cutAndSew->id,
+            'embellishment_cost' => 15.00,
+            'setup_cost' => 5.00
+        ]);
+
+        Embellishment::factory()->create([
+            'name' => 'Tackle Twill',
+            'embellishment_types_id' => $cutAndSew->id,
+            'embellishment_cost' => 15.00,
+            'setup_cost' => 5.00
+        ]);
+
+        Embellishment::factory()->create([
+            'name' => 'Partial Sublimation',
+            'embellishment_types_id' => $cutAndSew->id,
+            'embellishment_cost' => 8.00,
+            'setup_cost' => 5.00
+        ]);
+
+        Embellishment::factory()->create([
+            'name' => 'Patch',
+            'embellishment_types_id' => $cutAndSew->id,
+            'embellishment_cost' => 15.00,
+            'setup_cost' => 5.00
+        ]);
+
+        Embellishment::factory()->create([
+            'name' => 'Sublimation',
+            'embellishment_types_id' => $sublimation->id,
+            'embellishment_cost' => 15.00,
+            'setup_cost' => 5.00
+        ]);
+
+        CustomerType::factory()->create([
+            'customer_type' => CustomerType::TEAM,
+            'name' => 'Team 1'
+        ]);
+
+        CustomerType::factory()->create([
+            'customer_type' => CustomerType::CLUB,
+            'name' => 'Club 2'
+        ]);
+
+        CustomerType::factory()->create([
+            'customer_type' => CustomerType::SCHOOL,
+            'name' => 'School 3'
+        ]);
+
+        FreightChargesRegion::factory()->create([
+            'region_name' => 'Northern region',
+        ]);
+
+        FreightChargesRegion::factory()->create([
+            'region_name' => 'West region',
+        ]);
+
+        GarmentPrice::factory()->create([
+            'style_code' => 'Tee 01',
+            'garment_price' => 10.00
+        ]);
+
+        GarmentPrice::factory()->create([
+            'style_code' => 'Tee 365',
+            'garment_price' => 15.00
+        ]);
     }
 }

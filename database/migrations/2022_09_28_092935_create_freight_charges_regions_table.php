@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('embellishment_types', function (Blueprint $table) {
+        Schema::create('freight_charges_regions', function (Blueprint $table) {
             $table->id();
-            $table->string('embellishment_name');
+            $table->string('region_name');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('embellishment_types');
+        Schema::dropIfExists('freight_charges_regions');
     }
 };

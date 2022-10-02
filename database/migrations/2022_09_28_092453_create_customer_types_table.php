@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('customer_types', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_type');
+            $table->enum('customer_type', ['team', 'club', 'school']);
             $table->string('name');
             $table->timestamps();
         });
