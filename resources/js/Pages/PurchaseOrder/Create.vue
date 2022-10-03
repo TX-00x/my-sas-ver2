@@ -422,6 +422,7 @@ export default {
             this.factoryNames = [];
             if (Array.isArray(prop)) {
                 prop.forEach((val, index) => {
+                    console.log('foo', val);
                     this.factoryNames.push(val.name);
                 })
             }
