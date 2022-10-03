@@ -405,6 +405,7 @@ export default {
         }
     },
     mounted() {
+        console.log('page mounted')
         this.extractFactoryName(this.factories);
         this.selectedCurrency = this.currencies[Object.keys(this.currencies)[0]];
 
@@ -420,6 +421,7 @@ export default {
         },
         extractFactoryName(prop) {
             this.factoryNames = [];
+            console.log('extractFactoryName', prop)
             if (Array.isArray(prop)) {
                 prop.forEach((val, index) => {
                     console.log('foo', val);
