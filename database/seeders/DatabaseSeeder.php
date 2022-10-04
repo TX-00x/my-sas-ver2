@@ -61,12 +61,15 @@ class DatabaseSeeder extends Seeder
 //            'name' => 'NZ Factory',
 //            'country_id' => Country::where('sort', 'NZ')->first()->id,
 //        ]);
+
         $this->call([
             UserSeeder::class,
             CountrySeeder::class,
             FactorySeeder::class,
             WarehouseSeeder::class,
         ]);
+
+        $user = User::query()->where('email','=', 'test@example.com')->get()->first();
 
         Warehouse::factory()->create([
             'name' => 'Warehouse 1',
@@ -328,6 +331,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 500,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => $user->id,
         ]);
 
         $lightDritechGreenInventory = MaterialInventory::factory()->create([
@@ -338,6 +342,7 @@ class DatabaseSeeder extends Seeder
             'usable_quantity' => 1000,
             'factory_id' => Factory::first(),
             'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
+            'action_taken_by' => $user->id,
         ]);
 
         Currency::factory()->create([
