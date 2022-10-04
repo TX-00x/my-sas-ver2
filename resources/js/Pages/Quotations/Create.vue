@@ -15,9 +15,9 @@
                     <div class="p-5">
                         <div class="grid grid-cols-3 gap-3">
                             <div>
-                                <el-select class="w-full" v-model="value" placeholder="Select customer">
+                                <el-select class="w-full" v-model="selected_customer_id" placeholder="Select customer">
                                     <el-option
-                                        v-for="item in options"
+                                        v-for="item in customer_options"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value">
@@ -25,9 +25,9 @@
                                 </el-select>
                             </div>
                             <div>
-                                <el-select class="w-full" v-model="value" placeholder="Select customer service person">
+                                <el-select class="w-full" v-model="selected_cs_person_id" placeholder="Select customer service person">
                                     <el-option
-                                        v-for="item in options"
+                                        v-for="item in cs_person_options"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value">
@@ -46,9 +46,9 @@
                         </div>
                         <div class="grid grid-cols-3 gap-3">
                             <div>
-                                <el-select class="w-full" v-model="value" placeholder="Team/Club/School">
+                                <el-select class="w-full" v-model="selected_club_id" placeholder="Team/Club/School">
                                     <el-option
-                                        v-for="item in options"
+                                        v-for="item in club_options"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value">
@@ -58,7 +58,7 @@
                             <div>
                                 <el-select class="w-full" v-model="value" placeholder="Customer sales person">
                                     <el-option
-                                        v-for="item in options"
+                                        v-for="item in sales_persons_options"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value">
@@ -75,7 +75,7 @@
                                     type="textarea"
                                     :rows="2"
                                     placeholder="Delivery address"
-                                    v-model="textarea">
+                                    v-model="delivery_address">
                                 </el-input>
                             </div>
                         </div>
@@ -103,9 +103,9 @@
                     <div class="p-5">
                         <div class="grid grid-cols-4 gap-3">
                             <div>
-                                <el-select v-model="value" placeholder="Style code">
+                                <el-select v-model="selected_style_code_id" placeholder="Style code">
                                     <el-option
-                                        v-for="item in options"
+                                        v-for="item in style_code_options"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value">
@@ -113,9 +113,9 @@
                                 </el-select>
                             </div>
                             <div>
-                                <el-select v-model="value" placeholder="Category">
+                                <el-select v-model="selected_category_id" placeholder="Category">
                                     <el-option
-                                        v-for="item in options"
+                                        v-for="item in category_options"
                                         :key="item.value"
                                         :label="item.label"
                                         :value="item.value">
@@ -123,7 +123,7 @@
                                 </el-select>
                             </div>
                             <div>
-                                <el-input placeholder="Quantity" v-model="garment_quantity"></el-input>
+                                <el-input placeholder="Quantity" v-model.number="garment_quantity"></el-input>
                             </div>
                             <div>
                                 <el-select @change="changeGarmentPrice" placeholder="Default Garment Price" v-model="selected_garment_price">
@@ -152,7 +152,7 @@
                                     type="textarea"
                                     :rows="2"
                                     placeholder="Add notes"
-                                    v-model="textarea">
+                                    v-model="quotation_notes">
                                 </el-input>
                             </div>
                             <div>
@@ -217,7 +217,7 @@
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of embellishment" v-model="sublimations.no_of_embellishments"></el-input>
+                                            <el-input placeholder="No of embellishment" v-model.number="sublimations.no_of_embellishments"></el-input>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
@@ -232,7 +232,7 @@
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of setup" v-model="sublimations.no_of_setups"></el-input>
+                                            <el-input placeholder="No of setup" v-model.number="sublimations.no_of_setups"></el-input>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
@@ -306,7 +306,7 @@
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of embellishment" v-model="sublimations.no_of_embellishments"></el-input>
+                                            <el-input placeholder="No of embellishment" type="number" v-model.number="sublimations.no_of_embellishments"></el-input>
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap">
@@ -321,10 +321,10 @@
                                     </td>
                                     <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of setup" v-model="sublimations.no_of_setups"></el-input>
+                                            <el-input placeholder="No of setup" type="number" v-model.number="sublimations.no_of_setups"></el-input>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-3 whitespace-nowrap"v-show="!account_payment">
+                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
                                         <div class="text-sm font-medium text-gray-900">
                                             {{sublimations.total_setup_cost}}
                                         </div>
@@ -491,7 +491,7 @@
                                     <div class="text-sm text-center">Cost per region: <span class="text-lg">$0.00</span></div>
                                 </div>
                                 <div>
-                                    <el-input placeholder="No of boxes" v-model.number="number_of_boxes"></el-input>
+                                    <el-input placeholder="No of boxes" type="number" v-model.number="number_of_boxes"></el-input>
                                 </div>
                                 <div class="text-sm text-center">
                                     Total freight charge: <span class="text-lg">$0.00</span>
@@ -511,7 +511,7 @@
                     <div class="p-5">
                         <div class="flex flex-row justify-end">
                             <div class="text-sm text-center px-2">
-                                Total quotation charge: <span class="text-lg">$0.00</span>
+                                Total quotation charge (incl. 15% GST) : <span class="text-lg">$0.00</span>
                             </div>
                             <div class="px-2">
                                 <el-button type="primary">Save</el-button>
@@ -530,7 +530,7 @@ export default {
     name: "Create",
     data() {
         return {
-            options: [{
+            customer_options: [{
                 value: 'customer 1',
                 label: 'Customer 1'
             },{
@@ -540,6 +540,34 @@ export default {
                 value: 'customer 3',
                 label: 'Customer 3'
             }],
+            cs_person_options:[{
+                value: 'person 1',
+                label: 'Person 1'
+            },{
+                value: 'person 2',
+                label: 'Person 2'
+            }],
+            sales_persons_options:[{
+                value: 'person 1',
+                label: 'Person 1'
+            },{
+                value: 'person 2',
+                label: 'Person 2'
+            }],
+            style_code_options:[{
+                value: 'style 1',
+                label: 'Style 1'
+            },{
+                value: 'style 2',
+                label: 'Style 2'
+            }],
+            category_options:[{
+                value: 'category 1',
+                label: 'Category 1'
+            },{
+                value: 'category 2',
+                label: 'Category 2'
+            }],
             embellishment_options: [{
                 value: 'cut and sew',
                 label: 'Cut and sew'
@@ -547,15 +575,28 @@ export default {
                 value: 'sublimation',
                 label: 'Sublimation'
             }],
+            club_options:[{
+                value: 'club 1',
+                label: 'Club 1'
+            },{
+                value: 'club 2',
+                label: 'Club 2'
+            }],
             value: '',
             garment_quantity: '',
             quotation_type: 'General',
             checked2: false,
             input: '',
-            textarea: '',
             selected_embellishment_type: '',
+            selected_customer_id: null,
+            selected_cs_person_id: null,
+            selected_style_code_id:null,
+            selected_category_id:null,
+            selected_club_id:null,
             show_cut_and_sew_table: false,
             show_sublimation_table: false,
+            delivery_address:'',
+            quotation_notes:'',
             garment_price: [{
                 value: 'default garment price',
                 label: 'Default garment price'
