@@ -64,6 +64,7 @@ class UsersController extends Controller
             ]);
 
             dispatch(new SendWelcomeEmailToUser($user, $password));
+
             return redirect()->route('users.index')
                 ->with(['message' => 'user account created successfully.']);
         } catch (\Exception $ex) {

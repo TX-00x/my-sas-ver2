@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use App\Repositories\FileRepositoryInterface as FileRepository;
@@ -72,16 +73,17 @@ class CustomersController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'description' => $validated['description'],
-                'cs_agent_id' => $validated['cs_agent_id'],
-                'sales_agent_id' => $validated['sales_agent_id'],
                 'logo_id' => $validated['logo_id'],
             ];
-
-            $savedCustomer = $this->customerRepository->create($customer);
+            $savedCustomer = null;
+            DB::transaction(function () use ($request, $customer, &$savedCustomer) {
+                $savedCustomer = $this->customerRepository->create($customer);
+                $savedCustomer->customerSupportAgents()->attach($request->input('csAgents'));
+                $savedCustomer->salesAgents()->attach($request->input('salesAgents'));
+            });
 
             return Redirect::route('customers.edit', [$savedCustomer->id])
                 ->with(['message' => 'successfully saved']);
-
         } catch (\Exception $ex) {
             return back()->withInput()->withErrors(['message' => $ex->getMessage()]);
         }
@@ -90,6 +92,9 @@ class CustomersController extends Controller
     public function edit(Customer $customer)
     {
         $savedCustomer = $this->customerRepository->show($customer->id);
+
+        $savedCustomer['salesAgents'] = $savedCustomer->salesAgents;
+        $savedCustomer['csAgents'] = $savedCustomer->customerSupportAgents;
         $salesAgents = $this->salesAgentRepository->getAllSalesAgents();
         $csAgents = $this->csAgentRepository->getAllCsAgents();
         $customerContacts = $this->customerContactsRepository->showContactsOfCustomer($customer->id);
@@ -117,12 +122,12 @@ class CustomersController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'description' => $validated['description'],
-                'cs_agent_id' => $validated['cs_agent_id'],
-                'sales_agent_id' => $validated['sales_agent_id'],
                 'logo_id' => $validated['logo_id'],
             ];
 
             $savedCustomer = $this->customerRepository->update($customer->id, $customerDetails);
+            $savedCustomer->customerSupportAgents()->sync($request->input('csAgents'));
+            $savedCustomer->salesAgents()->sync($request->input('salesAgents'));
 
             return Redirect::route('customers.edit', [$savedCustomer->id])
                 ->with(['message' => 'successfully updated']);

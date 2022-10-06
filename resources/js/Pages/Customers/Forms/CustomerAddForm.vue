@@ -43,23 +43,32 @@
                     <div class="pt-2 pb-4">
                         <label for="cs_agent" class="block text-base font-medium text-gray-700">Customer
                             service agent</label>
-                        <select v-model="customer.cs_agent_id" id="cs_agent" name="cs_agent"
-                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option v-for="csAgent in csAgents" :value="csAgent.id">
-                                {{ csAgent.name }}
-                            </option>
-                        </select>
+<!--                        <select v-model="customer.cs_agent_id" id="cs_agent" name="cs_agent"-->
+<!--                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">-->
+<!--                            <option v-for="csAgent in csAgents" :value="csAgent.id">-->
+<!--                                {{ csAgent.name }}-->
+<!--                            </option>-->
+<!--                        </select>-->
+                        <el-select class="w-full" v-model="customer.csAgents" multiple placeholder="Select">
+                            <el-option
+                                v-for="(csAgent,index) in csAgents"
+                                :key="csAgent.id"
+                                :label="csAgent.name"
+                                :value="csAgent.id">
+                            </el-option>
+                        </el-select>
                     </div>
                     <div class="pt-2 pb-4">
                         <label for="sales_agent"
                                class="block text-base font-medium text-gray-700">Sales agent</label>
-                        <select v-model="customer.sales_agent_id" id="sales_agent"
-                                name="sales_agent"
-                                class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option v-for="salesAgent in salesAgents" :value="salesAgent.id">
-                                {{ salesAgent.name }}
-                            </option>
-                        </select>
+                        <el-select class="w-full" v-model="customer.salesAgents" multiple placeholder="Select">
+                            <el-option
+                                v-for="saleAgent in salesAgents"
+                                :key="saleAgent.id"
+                                :label="saleAgent.name"
+                                :value="saleAgent.id">
+                            </el-option>
+                        </el-select>
                     </div>
                     <div class="pt-2 pb-4">
                         <label for="description" class="block text-base font-medium text-gray-700">Details</label>
@@ -110,6 +119,8 @@ name: "CustomerAddForm",
                 cs_agent_id: null,
                 sales_agent_id: null,
                 logo_id: null,
+                csAgents: [],
+                salesAgents: [],
             },
             uploads: {
                 logo:''

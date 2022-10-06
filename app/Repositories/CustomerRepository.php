@@ -19,7 +19,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function show($id)
     {
-        $relations = ['contacts', 'csAgent', 'salesAgent', 'logo', 'addresses.address.country'];
+        $relations = ['contacts', 'salesAgents', 'customerSupportAgents', 'logo', 'addresses.address.country'];
 
         return Customer::query()->with($relations)->find($id);
     }

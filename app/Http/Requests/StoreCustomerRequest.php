@@ -27,9 +27,11 @@ class StoreCustomerRequest extends FormRequest
             'name' => 'required|string|min:2|max:100',
             'email' => 'required|email',
             'description' => 'nullable|string|max:255',
-            'cs_agent_id' => 'required|integer',
-            'sales_agent_id' => 'required|integer',
-            'logo_id' => 'nullable|integer'
+//            'cs_agent_id' => 'required|integer',
+//            'sales_agent_id' => 'required|integer',
+            'logo_id' => 'nullable|integer',
+            'csAgents' => 'required|array',
+            'salesAgents' => 'required|array',
         ];
     }
 
