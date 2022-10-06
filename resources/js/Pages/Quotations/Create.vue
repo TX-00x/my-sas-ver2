@@ -271,7 +271,7 @@ export default {
             garment_quantity: null,
             selected_garment_price: null,
             cut_and_sew_table: [],
-            sublimations_table:[]
+            sublimations_table:[],
             style_code_options:[{
                 value: 'style 1',
                 label: 'Style 1'
