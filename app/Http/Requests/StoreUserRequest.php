@@ -16,16 +16,11 @@ class StoreUserRequest extends FormRequest
         return auth()->user()->hasRole('Administrator');
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'required|unique:users,email',
             'contact_number' => 'required|string|max:100',
             'selected_factory_id' => 'required|integer',
             'selected_roles' => 'required|array'
