@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,6 +15,10 @@ class QuotationController extends Controller
 
     public function create(Request $request)
     {
-        return Inertia::render('Quotations/Create');
+        $customers = Customer::query()->with(['csAgent', 'salesAgent'])->get();
+
+        return Inertia::render('Quotations/Create', [
+            'customerOptions' => $customers
+        ]);
     }
 }

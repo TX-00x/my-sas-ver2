@@ -13,72 +13,16 @@
                         <h4>Customer information</h4>
                     </div>
                     <div class="p-5">
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <el-select class="w-full" v-model="selected_customer_id" placeholder="Select customer">
-                                    <el-option
-                                        v-for="item in customer_options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <div>
-                                <el-select class="w-full" v-model="selected_cs_person_id" placeholder="Select customer service person">
-                                    <el-option
-                                        v-for="item in cs_person_options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <div class="flex flex-col justify-center items-center">
-                                <div class="py-1">Quotation type</div>
-                                <div>
-                                    <el-radio class="py-1" v-model="quotation_type" label="General"></el-radio>
-                                </div>
-                                <div>
-                                    <el-radio class="py-1" v-model="quotation_type" label="Funding"></el-radio>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div>
-                                <el-select class="w-full" v-model="selected_club_id" placeholder="Team/Club/School">
-                                    <el-option
-                                        v-for="item in club_options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <div>
-                                <el-select class="w-full" v-model="value" placeholder="Customer sales person">
-                                    <el-option
-                                        v-for="item in sales_persons_options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-3 py-8">
-                            <div>
-                                <el-input placeholder="Attention person name" v-model="input"></el-input>
-                            </div>
-                            <div>
-                                <el-input
-                                    type="textarea"
-                                    :rows="2"
-                                    placeholder="Delivery address"
-                                    v-model="delivery_address">
-                                </el-input>
-                            </div>
-                        </div>
+                        <customer-information
+                            :customer-options="customerOptions"
+                            :club-options="club_options"
+                            @customer-selected="customerSelected"
+                            @cs-selected="csPersonSelected"
+                            @sales-selected="salesPersonSelected"
+                            @quote-type-selected="quoteTypeSelected"
+                            @attention-person="onChangeAttentionPersonName"
+                            @delivery-address="onChangeDeliveryAddress"
+                        ></customer-information>
                     </div>
                 </div>
 
@@ -101,246 +45,20 @@
                     </div>
 
                     <div class="p-5">
-                        <div class="grid grid-cols-4 gap-3">
-                            <div>
-                                <el-select v-model="selected_style_code_id" placeholder="Style code">
-                                    <el-option
-                                        v-for="item in style_code_options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <div>
-                                <el-select v-model="selected_category_id" placeholder="Category">
-                                    <el-option
-                                        v-for="item in category_options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <div>
-                                <el-input placeholder="Quantity" v-model.number="garment_quantity"></el-input>
-                            </div>
-                            <div>
-                                <el-select @change="changeGarmentPrice" placeholder="Default Garment Price" v-model="selected_garment_price">
-                                    <el-option
-                                        v-for="item in garment_price"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-4 gap-3 py-8">
-                            <div>
-                                <el-select @change="showSetUpCostTable" v-model="selected_embellishment_type" placeholder="Select embellishment type">
-                                    <el-option
-                                        v-for="item in embellishment_options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <div class="col-span-2">
-                                <el-input
-                                    type="textarea"
-                                    :rows="2"
-                                    placeholder="Add notes"
-                                    v-model="quotation_notes">
-                                </el-input>
-                            </div>
-                            <div>
-                                <div class="flex flex-col">
-                                    <el-input :disabled="!editable_garment_price" placeholder="Garment price" v-model.number="garment_price_value"></el-input>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-row justify-center">
-                            <table v-if="show_cut_and_sew_table" class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Embellishment
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Embellishment cost
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        No of Embellishments
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Total embellishments cost
-                                    </th>
-                                    <th scope="col"
-                                        v-show="!account_payment"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Set up cost
-                                    </th>
-                                    <th scope="col"
-                                        v-show="!account_payment"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        No of Set ups
-                                    </th>
-                                    <th scope="col"
-                                        v-show="!account_payment"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Total set up cost
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-if="cut_and_sew_embellishments_table.length > 0" v-for="sublimations in cut_and_sew_embellishments_table">
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of embellishment" v-model.number="sublimations.no_of_embellishments"></el-input>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_embellishment_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.setup_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of setup" v-model.number="sublimations.no_of_setups"></el-input>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_setup_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[0]}}</el-button>
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[1]}}</el-button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                            <table v-if="show_sublimation_table" class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Embellishment
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Embellishment cost
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        No of Embellishments
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Total embellishments cost
-                                    </th>
-                                    <th scope="col"
-                                        v-show="!account_payment"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Set up cost
-                                    </th>
-                                    <th scope="col"
-                                        v-show="!account_payment"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        No of Set ups
-                                    </th>
-                                    <th scope="col"
-                                        v-show="!account_payment"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Total set up cost
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-if="sublimation_embellishments_table.length > 0" v-for="sublimations in sublimation_embellishments_table">
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.embellishment_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of embellishment" type="number" v-model.number="sublimations.no_of_embellishments"></el-input>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_embellishment_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.setup_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            <el-input placeholder="No of setup" type="number" v-model.number="sublimations.no_of_setups"></el-input>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap" v-show="!account_payment">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{sublimations.total_setup_cost}}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[0]}}</el-button>
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-900 py-1">
-                                            <el-button size="mini">{{sublimations.actions[1]}}</el-button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <quotation-items
+                            :category-options="category_options"
+                            :style-code-options="style_code_options"
+                            :acoount-payment="account_payment"
+                            @style-selected="onChangeStyleCode"
+                            @category-selected="onChangeCategory"
+                            @garment-qty="onChangeGarmentQuantity"
+                            @garment-price-selected="onChangeGarmentPriceType"
+                            @setup-cost-table="onChangeEmbellishmentOptions"
+                            @quotation-notes="onChangeQuotationNotes"
+                            @garment-price="onChangeGarmentPrice"
+                            @cut-and-sew-table="onChangeCutAndSewTable"
+                            @sublimations-table="onChangeSublimationsTable"
+                        ></quotation-items>
 
                         <div class="py-2 flex flex-row justify-between">
                             <el-button type="danger" plain>Reset table</el-button>
@@ -526,34 +244,34 @@
 </template>
 
 <script>
+import CustomerInformation from "@/Pages/Quotations/Components/CustomerInformation";
+import QuotationItems from "@/Pages/Quotations/Components/QuotationItems";
+
 export default {
     name: "Create",
+    components: {
+        CustomerInformation,
+        QuotationItems
+    },
+    props: {
+        customerOptions:{
+            type: Array,
+            required: true
+        }
+    },
     data() {
         return {
-            customer_options: [{
-                value: 'customer 1',
-                label: 'Customer 1'
-            },{
-                value: 'customer 2',
-                label: 'Customer 2'
-            },{
-                value: 'customer 3',
-                label: 'Customer 3'
-            }],
-            cs_person_options:[{
-                value: 'person 1',
-                label: 'Person 1'
-            },{
-                value: 'person 2',
-                label: 'Person 2'
-            }],
-            sales_persons_options:[{
-                value: 'person 1',
-                label: 'Person 1'
-            },{
-                value: 'person 2',
-                label: 'Person 2'
-            }],
+            selected_customer_id: null,
+            selected_cs_person_id: null,
+            selected_sales_person_id: null,
+            attention_person_name:'',
+            delivery_address:'',
+            selected_style_code: null,
+            selected_category:null,
+            garment_quantity: null,
+            selected_garment_price: null,
+            cut_and_sew_table: [],
+            sublimations_table:[]
             style_code_options:[{
                 value: 'style 1',
                 label: 'Style 1'
@@ -568,13 +286,6 @@ export default {
                 value: 'category 2',
                 label: 'Category 2'
             }],
-            embellishment_options: [{
-                value: 'cut and sew',
-                label: 'Cut and sew'
-            },{
-                value: 'sublimation',
-                label: 'Sublimation'
-            }],
             club_options:[{
                 value: 'club 1',
                 label: 'Club 1'
@@ -582,115 +293,15 @@ export default {
                 value: 'club 2',
                 label: 'Club 2'
             }],
-            value: '',
-            garment_quantity: '',
-            quotation_type: 'General',
-            checked2: false,
-            input: '',
+            quotation_type: '',
             selected_embellishment_type: '',
-            selected_customer_id: null,
-            selected_cs_person_id: null,
             selected_style_code_id:null,
             selected_category_id:null,
-            selected_club_id:null,
             show_cut_and_sew_table: false,
             show_sublimation_table: false,
-            delivery_address:'',
             quotation_notes:'',
-            garment_price: [{
-                value: 'default garment price',
-                label: 'Default garment price'
-            },{
-                value: 'custom garment price',
-                label: 'Custom garment price'
-            }],
             editable_garment_price: false,
-            selected_garment_price: '',
             garment_price_value: '',
-            cut_and_sew_embellishments_table: [
-                {
-                    embellishment: 'Heat Transfer',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                },
-                {
-                    embellishment: 'Screen Print',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                },
-                {
-                    embellishment: 'Embroidery',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                },
-                {
-                    embellishment: 'Applique',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                },
-                {
-                    embellishment: 'Tackle Twill',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                },
-                {
-                    embellishment: 'Partial Sublimation',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                },
-                {
-                    embellishment: 'Patch',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                }
-            ],
-            sublimation_embellishments_table:[
-                {
-                    embellishment: 'Sublimation',
-                    embellishment_cost: 0,
-                    no_of_embellishments: 0,
-                    total_embellishment_cost: 0,
-                    setup_cost: 0,
-                    no_of_setups: 0,
-                    total_setup_cost: 0,
-                    actions: ['Edit', 'Clear']
-                }
-            ],
             freight_charge_region:[{
                 value: 'nothern region',
                 label: 'Northern Region'
@@ -702,24 +313,50 @@ export default {
         }
     },
     methods: {
-        showSetUpCostTable() {
-            if (this.selected_embellishment_type === 'cut and sew') {
-                this.show_cut_and_sew_table = true
-                this.show_sublimation_table = false
-            }
-
-            if (this.selected_embellishment_type === 'sublimation') {
-                this.show_sublimation_table = true
-                this.show_cut_and_sew_table =  false
-            }
+        customerSelected(value){
+            this.selected_customer_id = value.id
         },
-        changeGarmentPrice(value) {
-            if (value === 'default garment price') {
-                this.editable_garment_price = false
-            }
-            if (value === 'custom garment price') {
-                this.editable_garment_price = true
-            }
+        csPersonSelected(value){
+            this.selected_cs_person_id = value.id
+        },
+        salesPersonSelected(value){
+            this.selected_sales_person_id = value.id
+        },
+        quoteTypeSelected(value){
+            this.quotation_type = value
+        },
+        onChangeAttentionPersonName(value) {
+            this.attention_person_name = value
+        },
+        onChangeDeliveryAddress(value) {
+            this.delivery_address = value
+        },
+        onChangeStyleCode(value) {
+            this.selected_style_code = value
+        },
+        onChangeCategory(value) {
+            this.selected_category = value
+        },
+        onChangeGarmentQuantity(value) {
+            this.garment_quantity = value
+        },
+        onChangeGarmentPriceType(value) {
+            this.selected_garment_price = value
+        },
+        onChangeGarmentPrice(value) {
+            this.garment_price_value = value
+        },
+        onChangeEmbellishmentOptions(value) {
+            this.selected_embellishment_type = value
+        },
+        onChangeQuotationNotes(value){
+            this.quotation_notes = value
+        },
+        onChangeCutAndSewTable(value) {
+            this.cut_and_sew_table = value
+        },
+        onChangeSublimationsTable(value) {
+            this.show_sublimation_table = value
         }
     },
 
