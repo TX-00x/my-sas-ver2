@@ -58,12 +58,12 @@
                             @garment-price="onChangeGarmentPrice"
                             @cut-and-sew-table="onChangeCutAndSewTable"
                             @sublimations-table="onChangeSublimationsTable"
-                        ></quotation-items>
-
-                        <div class="py-2 flex flex-row justify-between">
-                            <el-button type="danger" plain>Reset table</el-button>
-                            <el-button type="primary">Add</el-button>
-                        </div>
+                        >
+                            <div class="py-2 flex flex-row justify-between">
+                                <el-button type="danger" plain>Reset table</el-button>
+                                <el-button type="primary">Add</el-button>
+                            </div>
+                        </quotation-items>
 
                         <div id="cut_and_show_selected_items" class="flex flex-row justify-center" v-if="show_cut_and_sew_table">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -353,9 +353,13 @@ export default {
             this.quotation_notes = value
         },
         onChangeCutAndSewTable(value) {
+            this.show_cut_and_sew_table = true;
+            this.show_sublimation_table = false;
             this.cut_and_sew_table = value
         },
         onChangeSublimationsTable(value) {
+            this.show_cut_and_sew_table = false;
+            this.show_sublimation_table = true;
             this.show_sublimation_table = value
         }
     },

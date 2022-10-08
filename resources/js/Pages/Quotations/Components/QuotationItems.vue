@@ -75,7 +75,7 @@
             ></sublimation-table>
         </div>
 
-
+        <slot></slot>
     </div>
 </template>
 

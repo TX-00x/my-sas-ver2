@@ -21,4 +21,9 @@ class QuotationController extends Controller
             'customerOptions' => $customers
         ]);
     }
+
+    public function view()
+    {
+        return Inertia::render('Quotations/Show', []);
+    }
 }

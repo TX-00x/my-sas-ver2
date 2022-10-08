@@ -232,4 +232,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
     Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
+    Route::get('/quotations/view', [QuotationController::class, 'view'])->name('quotations.view');
 });

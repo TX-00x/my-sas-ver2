@@ -113,7 +113,8 @@
                 </div>
 
                 <div class="bg-white overflow-hidden shadow-xl rounded-md border mt-5">
-                    <div class="bg-gray-500 pl-5 pt-2 pb-2 text-white">
+                    <div class="bg-gray-500 pl-5
+                    pt-2 pb-2 text-white">
                         <h4>Style information</h4>
                     </div>
                     <div class="p-5">
