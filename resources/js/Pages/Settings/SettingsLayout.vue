@@ -124,6 +124,12 @@ export default {
                         route: 'settings.item-types.index'
                     }
                 ],
+                embellishments: [
+                    {
+                        name: 'Embellishments',
+                        route: 'settings.embellishments.index'
+                    }
+                ]
             }
         }
     }

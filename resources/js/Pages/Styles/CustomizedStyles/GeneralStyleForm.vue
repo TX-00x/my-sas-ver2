@@ -161,6 +161,61 @@
                     </table>
                 </div>
             </div>
+            <el-divider content-position="left"><h3 class="text-lg font-bold">Embellishments</h3></el-divider>
+            <div class="py-4">
+                <div class="flex flex-row justify-end pb-10">
+                    <div><el-button @click="addEmbellishmentItem" size="small" type="primary">Add</el-button></div>
+                </div>
+                <el-row class="py-4" :gutter="10" justify="center" :key="index" v-for="(item, index) in form.embellishments_form">
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <app-select
+                            :filterable="true"
+                            :multiple="false"
+                            :options="embellishments"
+                            option-label="type"
+                            no-data-text="No Types available"
+                            no-match-text="Type not found"
+                            v-model="item.type"
+                            placeholder="Select Embellishment type name"
+                        ></app-select>
+                    </el-col>
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <app-select
+                            :filterable="true"
+                            :multiple="false"
+                            :options="[{name:'Top', value:'top'}, {name:'Bottom', value:'bottom'}]"
+                            option-label="name"
+                            option-value="value"
+                            no-data-text="No Positions available"
+                            no-match-text="Position not found"
+                            v-model="item.position"
+                            placeholder="Select a position"
+                        ></app-select>
+                    </el-col>
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <label :for="'dropzone-embellishments_'+index"
+                               :class="{'bg-contain bg-center bg-no-repeat' : item.image_url !== ''}" :style="{ backgroundImage: 'url('+item.image_url+')'}"
+                               class="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                            <div class="flex flex-col justify-center items-center pt-5 pb-6" v-if="!item.image_url">
+                                <svg class="mb-3 w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span></p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">JPEG, JPG or PNG</p>
+                            </div>
+                            <input :name="'style_image_'+index" :id="'dropzone-embellishments_'+index" type="file" @change="previewEmbImage($event, index)" ref="embellishments_images" class="hidden" />
+                        </label>
+                        <div class="absolute top-4 cursor-pointer" v-show="item.image_url !== ''" @click="setEmbellishmentUploadFieldEmpty(index)">
+                            <el-tooltip content="Remove image" placement="top">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                            </el-tooltip>
+                        </div>
+                    </el-col>
+                    <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
+                        <el-button @click="removeEmbellishmentItem(index)" size="small" type="danger">-</el-button>
+                    </el-col>
+                </el-row>
+            </div>
         </div>
     </div>
 </template>
@@ -171,6 +226,7 @@ import EditButton from "@/UIElements/EditButton";
 import DeleteButton from "@/UIElements/DeleteButton";
 import AppSelect from "@/UIElements/AppSelect";
 import Label from "@/Jetstream/Label";
+import Vue from "vue";
 
 export default {
     name: "GeneralStyleForm",
@@ -197,6 +253,10 @@ export default {
             required: true
         },
         sizes: {
+            type: Array,
+            required: true
+        },
+        embellishments: {
             type: Array,
             required: true
         },
@@ -234,8 +294,11 @@ export default {
             form: {
                 sizes: [],
                 panels: [],
-                customized_panels: []
+                customized_panels: [],
             },
+            // embellishments_form: [
+            //     {type:'',position:'',image_url:'' }
+            // ],
             selectedPanelOptions:{},
             panelColours: {},
             customized_style_code: '',
@@ -390,6 +453,27 @@ export default {
                     this.form.panels.splice(index, 1);
                 }
             }
+        },
+        setEmbellishmentUploadFieldEmpty(i){
+            this.form.embellishments_form[i].image_url = '';
+            this.$refs.embellishments_images[i].value = null;
+        },
+        previewEmbImage(e, i) {
+            const file = e.target.files[0];
+            this.form.embellishments_form[i].image_url = URL.createObjectURL(file);
+            this.form.embellishments_form[i].image = file;
+        },
+        addEmbellishmentItem() {
+            if(typeof this.form.embellishments_form === 'undefined') {
+                this.form.embellishments_form = [];
+                this.form.embellishments_form.push({ type:'',position:'',image_url:'', image:'', already_uploaded: false })
+            } else {
+                this.form.embellishments_form.push({ type:'',position:'',image_url:'', image:'', already_uploaded: false })
+            }
+
+        },
+        removeEmbellishmentItem(index) {
+            this.form.embellishments_form.splice(index, 1)
         }
     },
     computed: {
@@ -409,6 +493,9 @@ export default {
         disableAddPanelButton() {
             return false;
         },
+        uploadFieldNotEmpty(){
+            return this.url !== '';
+        }
     }
 }
 </script>
