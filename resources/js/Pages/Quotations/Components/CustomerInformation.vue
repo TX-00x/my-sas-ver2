@@ -101,7 +101,7 @@ export default {
             handler(newValue) {
                 const valueForEmmit = this.value;
                 valueForEmmit.customer_id = newValue.customer;
-                valueForEmmit.sale_agent_id = newValue.sales_agent;
+                valueForEmmit.sales_agent_id = newValue.sales_agent;
                 valueForEmmit.customer_service_agent_id = newValue.customer_service_agent;
                 valueForEmmit.type = newValue.type;
                 valueForEmmit.club = newValue.club;

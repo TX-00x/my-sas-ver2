@@ -48,7 +48,7 @@ class CreateQuotationTest extends TestCase
         $quotationData = new QuotationCreateData(
             createdById: $customerServiceAgent->id,
             customerId: $customer->id,
-            salesAgentI: $salesAgent->id,
+            salesAgentId: $salesAgent->id,
             customerSalesAgentId: $customerServiceAgent->id,
             type: 'generic',
             club: 'School',

@@ -14,7 +14,7 @@
             </div>
 
             <div>
-                <el-select value-key="id" :disabled="propStyleCodes.length === 0" filterable v-model="item.style_code" placeholder="Style code">
+                <el-select @change="onStyleCodeChange" value-key="id" :disabled="propStyleCodes.length === 0" filterable v-model="item.style_code" placeholder="Style code">
                     <el-option
                         v-for="item in propStyleCodes"
                         :key="item.id"
@@ -29,7 +29,7 @@
                 <el-input placeholder="Quantity" v-model.number="item.quantity"></el-input>
             </div>
             <div>
-                <el-select placeholder="Default Garment Price" v-model="item.price_type">
+                <el-select @change="onItemPriceChange" placeholder="Default Garment Price" v-model="item.price_type">
                     <el-option value="default" label="Default" />
                     <el-option value="custom" label="Custom" />
                 </el-select>
@@ -53,7 +53,7 @@
             <div>
                 <div class="flex flex-col">
                     <el-input
-                        v-model.number="item.unit_price"
+                        v-model="item.unit_price"
                         :disabled="item.price_type !== 'custom'"
                         placeholder="Custom Price"
                         type="number"
@@ -126,17 +126,6 @@ export default {
 
     },
     watch: {
-        itemSelectedStyleCode: {
-            deep: true,
-            handler(newObject) {
-                if (newObject == null) {
-                    return this.item.unit_price = 0;
-                    return;
-                }
-
-                this.item.unit_price = newObject.default_price
-            },
-        },
         itemEmbellishmentType: {
             deep: true,
             handler(embellishmentType) {
@@ -147,17 +136,6 @@ export default {
             },
         },
 
-        calculatedEmbellishments: {
-            deep: true,
-            handler(embellishmentUpdated) {
-                // let emTotal = 0;
-                // embellishmentUpdated.forEach(em => {
-                //     emTotal = emTotal + em.total;
-                // })
-                //
-                // this.item.embellishment_total = emTotal
-            }
-        },
         mutedItem: {
             deep: true,
             handler(item) {
@@ -178,17 +156,10 @@ export default {
         }
     },
     computed: {
-        itemSelectedStyleCode() {
-            return this.item.style_code
-        },
-
         itemEmbellishmentType() {
             return this.item.type
         },
 
-        calculatedEmbellishments() {
-            return this.item.embellishments
-        },
         mutedItem() {
             return this.item;
         }
@@ -202,6 +173,20 @@ export default {
                     preserveScroll: true,
                 }
             )
+        },
+
+        onStyleCodeChange() {
+            this.setDefaultPriceIfApplicable();
+        },
+
+        onItemPriceChange() {
+            this.setDefaultPriceIfApplicable();
+        },
+
+        setDefaultPriceIfApplicable() {
+            if (this.item.price_type === 'default' || this.item.price_type === null) {
+                this.item.unit_price = this.item.style_code.default_price
+            }
         },
 
         itemData() {

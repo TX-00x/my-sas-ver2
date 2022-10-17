@@ -20,7 +20,7 @@ class QuotationAggregateRootTest extends TestCase
     {
         $quotationData = new QuotationCreateData(
             customerId: 1,
-            salesAgentI: 2,
+            salesAgentId: 2,
             customerSalesAgentId: 3,
             type: 'generic',
             club: 'School',

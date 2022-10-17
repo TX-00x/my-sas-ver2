@@ -6,7 +6,7 @@ class QuotationCreateEmbellishmentData
 {
     public function __construct(
         public int $embellishmentId,
-        public string $position,
+        public ?string $position,
         public int    $quantity,
         public float  $cost,
         public float  $totalEmbellishmentCost,

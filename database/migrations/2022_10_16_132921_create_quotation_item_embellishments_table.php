@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quotation_item_id')->constrained('quotation_items');
             $table->foreignId('embellishment_id')->constrained('embellishments');
-            $table->string('position');
+            $table->string('position')->nullable();
             $table->integer('quantity');
             $table->float('cost');
             $table->float('total_embellishment_cost');

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\CustomerQuotationController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\ExternalStylesController;
 use App\Http\Controllers\FactoryOrderController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\SupplierContactsController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CustomerContactsController;
+use App\Models\Quotation;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -237,5 +239,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
     Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
-    Route::get('/quotations/view', [QuotationController::class, 'view'])->name('quotations.view');
+    Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+    Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
 });
+
+Route::post('/customer/quotation', [CustomerQuotationController::class, 'show'])->name('public.customer.quotation');

@@ -61,7 +61,19 @@
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-
+                            <tr v-for="quotation in quotations.data">
+                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ quotation.number }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ quotation.created_at }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ quotation.customer.name }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ quotation.created_by.name }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ quotation.created_at }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ quotation.sales_agent.name }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <inertia-link class="text-blue-500 font-semibold" :href="route('quotations.show', {quotation: quotation.id})">
+                                        View
+                                    </inertia-link>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -74,23 +86,29 @@
 
 export default {
     name: "Index",
+    props: {
+        quotations: {
+            required: true,
+            type: Object,
+        }
+    },
     data() {
         return {
             options: [{
-                value: 'All',
-                label: 'all'
+                value: 'all',
+                label: 'All'
             },{
-                value: 'Drafts',
-                label: 'drafts'
+                value: 'drafts',
+                label: 'Drafts'
             },{
-                value: 'customer approved',
+                value: 'customer_approved',
                 label: 'Customer Approved'
             }, {
-                value: 'customer rejected',
+                value: 'customer_rejected',
                 label: 'Customer Rejected'
             }, {
-                value: 'Sales Approval',
-                label: 'sales approval'
+                value: 'sales_approval',
+                label: 'Sales Approval'
             }],
             value: '',
             checked1: true,

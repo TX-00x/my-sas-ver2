@@ -13,7 +13,7 @@ class QuotationItemData
         public int    $quantity,
         public string $priceType,
         public float  $unitPrice,
-        public float  $totalUnitPrice,
+        public ?float  $totalUnitPrice,
         public string $embellishmentType,
         public array  $embellishments,
         public ?string $note,

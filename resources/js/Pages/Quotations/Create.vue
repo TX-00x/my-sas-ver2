@@ -29,7 +29,7 @@
                     <div class="p-5">
                         <div class="flex flex-row">
                             <div class="px-2">
-                                <el-checkbox v-model="account_payment" label="Send payment on 20th of the month"></el-checkbox>
+                                <el-checkbox v-model="form.payment_term_20" label="Send payment on 20th of the month"></el-checkbox>
                             </div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                             <div class="text-sm text-center px-2">
                                 Total quotation charge (incl. 15% GST) : <span class="text-lg">NZD {{ form.gross_price }}</span>
                             </div>
-                            <div class="px-2">
+                            <div @click="save" class="px-2">
                                 <el-button type="primary">Save</el-button>
                             </div>
                         </div>
@@ -197,7 +197,7 @@ export default {
     },
     data() {
         return {
-            form: {
+            form: this.$inertia.form({
                 customer_id: null,
                 sales_agent_id: null,
                 customer_service_agent_id: null,
@@ -213,14 +213,14 @@ export default {
                 items_net_price: 0,
                 gross_price: 0,
                 items: [],
-            },
-            selected_freight_charge_region: '',
-            number_of_boxes: null,
-            surcharge_applied: false,
-            account_payment: false,
+                payment_term_20: false,
+            }),
         }
     },
     methods: {
+        save() {
+            this.form.post(route('quotations.store'))
+        },
     },
     watch: {
         updatedQuotation: {
