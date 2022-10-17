@@ -2,68 +2,60 @@
     <div>
         <div class="grid grid-cols-3 gap-3">
             <div>
-                <el-select class="w-full" @change="onSelectCustomer" placeholder="Select customer" v-model="selected_customer">
+                <el-select v-model="form.customer" class="w-full" placeholder="Select customer">
                     <el-option
-                        v-for="item in customerOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item">
+                        v-for="customer in customerOptions"
+                        :key="customer.id"
+                        :label="customer.name"
+                        :value="customer.id">
                     </el-option>
                 </el-select>
             </div>
             <div>
-                <el-select class="w-full" @change="onselectCsPerson" placeholder="Select customer service person" v-model="selected_cs_person">
+                <el-select class="w-full" placeholder="Select customer service person" v-model="form.customer_service_agent">
                     <el-option
-                        v-for="item in csPersonOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item">
+                        v-for="csAgent in propCustomerSupportAgents"
+                        :key="csAgent.id"
+                        :label="csAgent.name"
+                        :value="csAgent.id">
                     </el-option>
                 </el-select>
             </div>
             <div class="flex flex-col justify-center items-center">
                 <div class="py-1">Quotation type</div>
                 <div>
-                    <el-radio class="py-1" @change="onSelectQuoteType" v-model="quotation_type" label="General"></el-radio>
+                    <el-radio class="py-1" v-model="form.type" label="general">General</el-radio>
                 </div>
                 <div>
-                    <el-radio class="py-1" @change="onSelectQuoteType" v-model="quotation_type" label="Funding"></el-radio>
+                    <el-radio class="py-1" v-model="form.type" label="funding">Funding</el-radio>
                 </div>
             </div>
         </div>
         <div class="grid grid-cols-3 gap-3">
             <div>
-                <el-select class="w-full" v-model="selected_club_id" placeholder="Team/Club/School">
-                    <el-option
-                        v-for="item in clubOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
+                <el-input class="w-full" placeholder="Team/Club/School"  v-model="form.club"></el-input>
             </div>
             <div>
-                <el-select class="w-full" v-model="selected_sales_person" @change="onSelectSalesPerson" placeholder="Customer sales person">
+                <el-select class="w-full" v-model="form.sales_agent" placeholder="Customer sales person">
                     <el-option
-                        v-for="item in salesPersonsOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item">
+                        v-for="saleAgent in propSalesAgents"
+                        :key="saleAgent.id"
+                        :label="saleAgent.name"
+                        :value="saleAgent.id">
                     </el-option>
                 </el-select>
             </div>
         </div>
         <div class="grid grid-cols-3 gap-3 py-8">
             <div>
-                <el-input @change="onChangeAttentionPersonName" placeholder="Attention person name"  v-model="attention_person_name"></el-input>
+                <el-input placeholder="Attention person name"  v-model="form.attention_person"></el-input>
             </div>
             <div>
                 <el-input
                     type="textarea"
-                    @change="onChangeDeliveryAddress"
                     :rows="2"
                     placeholder="Delivery address"
-                    v-model="delivery_address">
+                    v-model="form.delivery_address">
                 </el-input>
             </div>
         </div>
@@ -78,50 +70,46 @@ export default {
             type: Array,
             required: true
         },
-        clubOptions: {
+        propSalesAgents: {
+            type: Array,
+            required: true,
+        },
+        propCustomerSupportAgents: {
             type: Array,
             required: true
         },
+        value: {
+            type: Object,
+            required: true,
+        }
     },
     data(){
         return {
-            selected_customer: null,
-            selected_cs_person: null,
-            selected_sales_person: null,
-            quotation_type: '',
-            selected_club_id: null,
-            attention_person_name: '',
-            delivery_address: '',
-            csPersonOptions: [],
-            salesPersonsOptions:[]
+            form:{
+                customer: null,
+                sales_agent: null,
+                type:'general',
+                club: null,
+                attention_person: null,
+                delivery_address: null,
+            },
         }
     },
-    methods:{
-        onSelectCustomer(value) {
-            this.csPersonOptions.push(value.cs_agent)
-            this.onselectCsPerson(this.csPersonOptions[0])
-            this.selected_cs_person = value.cs_agent
+    watch: {
+        form: {
+            deep: true,
+            handler(newValue) {
+                const valueForEmmit = this.value;
+                valueForEmmit.customer_id = newValue.customer;
+                valueForEmmit.sale_agent_id = newValue.sales_agent;
+                valueForEmmit.customer_service_agent_id = newValue.customer_service_agent;
+                valueForEmmit.type = newValue.type;
+                valueForEmmit.club = newValue.club;
+                valueForEmmit.attention_person = newValue.attention_person;
+                valueForEmmit.delivery_address = newValue.delivery_address;
 
-            this.salesPersonsOptions.push(value.sales_agent)
-            this.onSelectSalesPerson(this.salesPersonsOptions[0])
-            this.selected_sales_person = value.sales_agent
-
-            this.$emit('customer-selected', value)
-        },
-        onselectCsPerson(value) {
-            this.$emit('cs-selected', value)
-        },
-        onSelectSalesPerson(value) {
-            this.$emit('sales-selected', value)
-        },
-        onSelectQuoteType(value) {
-            this.$emit('quote-type-selected', value)
-        },
-        onChangeAttentionPersonName(value) {
-            this.$emit('attention-person', value)
-        },
-        onChangeDeliveryAddress(value) {
-            this.$emit('delivery-address', value)
+                this.$emit('input', valueForEmmit)
+            }
         }
     }
 }

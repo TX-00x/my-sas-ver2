@@ -2,48 +2,44 @@
     <div>
         <div class="grid grid-cols-4 gap-3">
             <div>
-                <el-select v-model="selected_style_code_id" @change="onChangeStyleCode" placeholder="Style code">
+                <el-select @change="onCategoryChanged" v-model="item.category_id" placeholder="Category">
                     <el-option
-                        v-for="item in styleCodeOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item">
+                        v-for="category in propCategories"
+                        :key="category.id"
+                        :label="category.name"
+                        :value="category.id"
+                    >
                     </el-option>
                 </el-select>
             </div>
+
             <div>
-                <el-select v-model="selected_category_id" @change="onChangeCategory" placeholder="Category">
+                <el-select value-key="id" :disabled="propStyleCodes.length === 0" filterable v-model="item.style_code" placeholder="Style code">
                     <el-option
-                        v-for="item in categoryOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
+                        v-for="item in propStyleCodes"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item"
+                    >
                     </el-option>
                 </el-select>
             </div>
+
             <div>
-                <el-input placeholder="Quantity" v-model.number="garment_quantity" @change="onChangeGarmentQuantity"></el-input>
+                <el-input placeholder="Quantity" v-model.number="item.quantity"></el-input>
             </div>
             <div>
-                <el-select placeholder="Default Garment Price" v-model="selected_garment_price" @change="onChangeGarmentPriceType">
-                    <el-option
-                        v-for="item in garment_price"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                <el-select placeholder="Default Garment Price" v-model="item.price_type">
+                    <el-option value="default" label="Default" />
+                    <el-option value="custom" label="Custom" />
                 </el-select>
             </div>
         </div>
         <div class="grid grid-cols-4 gap-3 py-8">
             <div>
-                <el-select @change="onChangeSetupCostTable" v-model="selected_embellishment_type" placeholder="Select embellishment type">
-                    <el-option
-                        v-for="item in embellishment_options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                <el-select v-model="item.type" placeholder="Select embellishment type">
+                    <el-option value="cut_and_sew" label="Cut and Saw" />
+                    <el-option value="sublimation" label="Sublimation" />
                 </el-select>
             </div>
             <div class="col-span-2">
@@ -51,37 +47,47 @@
                     type="textarea"
                     :rows="2"
                     placeholder="Add notes"
-                    @change="onChangeQuotationNotes"
-                    v-model="quotation_notes">
+                    v-model="item.notes">
                 </el-input>
             </div>
             <div>
                 <div class="flex flex-col">
-                    <el-input :disabled="!editable_garment_price" @change="onChangeGarmentPrice" placeholder="Garment price" type="number" min="0" v-model.number="garment_price_value"></el-input>
+                    <el-input
+                        v-model.number="item.unit_price"
+                        :disabled="item.price_type !== 'custom'"
+                        placeholder="Custom Price"
+                        type="number"
+                        min="0"
+                    ></el-input>
                 </div>
             </div>
         </div>
 
         <div class="flex flex-row justify-center">
             <cut-and-sew-table
-                v-show="show_cut_and_sew_table"
-                :acount-payment="acoountPayment"
-                @cut-and-sew-table="onChangeCutAndSewTable"
+                v-show="itemEmbellishmentType === 'cut_and_sew'"
+                v-model="item.embellishments"
             ></cut-and-sew-table>
-            <sublimation-table
-                v-show="show_sublimation_table"
-                :acount-payment="acoountPayment"
-                @sublimations-table="onChangeSublimationsTable"
-            ></sublimation-table>
+<!--            <sublimation-table-->
+<!--                v-show="item.type === 'sublimation'"-->
+<!--                :acount-payment="propAccountPayment"-->
+<!--                v-model="item.embellishments"-->
+<!--            ></sublimation-table>-->
         </div>
 
         <slot></slot>
+
+        <div class="py-2 flex flex-row justify-between">
+            <el-button type="danger" plain>Reset table</el-button>
+            <el-button @click="addItem" type="primary">Add</el-button>
+        </div>
     </div>
 </template>
 
 <script>
 import CutAndSewTable from "@/Pages/Quotations/Components/CutAndSewTable";
 import SublimationTable from "@/Pages/Quotations/Components/SublimationTable";
+import embellishments from "../../Factory/Embellishments";
 
 export default {
     name: "QuotationItems",
@@ -90,90 +96,149 @@ export default {
         CutAndSewTable
     },
     props: {
-        styleCodeOptions: {
+        value: {
             type: Array,
             required: true
         },
-        categoryOptions: {
+        propStyleCodes: {
             type: Array,
             required: true
         },
-        acoountPayment: {
-            type: Boolean,
+        propCategories: {
+            type: Array,
+            required: true
+        },
+        // propAccountPayment: {
+        //     type: Boolean,
+        //     required: true
+        // },
+        propEmbellishments: {
+            type: Array,
             required: true
         }
     },
     data(){
         return {
-            selected_style_code_id: null,
-            selected_category_id: null,
-            garment_quantity: null,
-            selected_garment_price: null,
-            garment_price: [{
-                value: 'default garment price',
-                label: 'Default garment price'
-            },{
-                value: 'custom garment price',
-                label: 'Custom garment price'
-            }],
-            embellishment_options: [{
-                value: 'cut and sew',
-                label: 'Cut and sew'
-            },{
-                value: 'sublimation',
-                label: 'Sublimation'
-            }],
-            selected_embellishment_type: '',
-            editable_garment_price: false,
-            quotation_notes: '',
-            garment_price_value: 0.00,
-            show_cut_and_sew_table: false,
-            show_sublimation_table: false,
+            item: this.itemData(),
+        }
+    },
+    mounted() {
+
+    },
+    watch: {
+        itemSelectedStyleCode: {
+            deep: true,
+            handler(newObject) {
+                if (newObject == null) {
+                    return this.item.unit_price = 0;
+                    return;
+                }
+
+                this.item.unit_price = newObject.default_price
+            },
+        },
+        itemEmbellishmentType: {
+            deep: true,
+            handler(embellishmentType) {
+                if (embellishmentType === 'cut_and_sew') {
+                    this.prepareEmbellishmentsForCutAndSaw();
+                    return;
+                }
+            },
+        },
+
+        calculatedEmbellishments: {
+            deep: true,
+            handler(embellishmentUpdated) {
+                // let emTotal = 0;
+                // embellishmentUpdated.forEach(em => {
+                //     emTotal = emTotal + em.total;
+                // })
+                //
+                // this.item.embellishment_total = emTotal
+            }
+        },
+        mutedItem: {
+            deep: true,
+            handler(item) {
+                console.log('item updated', item)
+                // update item unit total
+                this.item.unit_price_total = this.item.unit_price * this.item.quantity;
+
+                // update emblishment total
+                let emTotal = 0;
+                this.item.embellishments.forEach(em => {
+                    emTotal = emTotal + em.total;
+                })
+                this.item.embellishment_total = emTotal
+
+                // update gross total
+                this.item.gross_price = this.item.embellishment_total + this.item.unit_price_total;
+            }
+        }
+    },
+    computed: {
+        itemSelectedStyleCode() {
+            return this.item.style_code
+        },
+
+        itemEmbellishmentType() {
+            return this.item.type
+        },
+
+        calculatedEmbellishments() {
+            return this.item.embellishments
+        },
+        mutedItem() {
+            return this.item;
         }
     },
     methods:{
-        onChangeStyleCode(value){
-            this.$emit('style-selected', value)
+        onCategoryChanged() {
+            this.$inertia.visit(
+                route('quotations.create', {category_id: this.item.category_id}),
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                }
+            )
         },
-        onChangeCategory(value){
-            this.$emit('category-selected', value)
-        },
-        onChangeGarmentQuantity(value){
-            this.$emit('garment-qty', value)
-        },
-        onChangeGarmentPriceType(value){
-            this.$emit('garment-price-selected', value)
-            if (value === 'default garment price') {
-                this.editable_garment_price = false
-            }
-            if (value === 'custom garment price') {
-                this.editable_garment_price = true
-            }
-        },
-        onChangeGarmentPrice(value){
-            this.$emit('garment-price', value)
-        },
-        onChangeSetupCostTable(value){
-            this.$emit('setup-cost-table', value)
-            if (value === 'cut and sew') {
-                this.show_cut_and_sew_table = true
-                this.show_sublimation_table = false
-            }
 
-            if (value === 'sublimation') {
-                this.show_sublimation_table = true
-                this.show_cut_and_sew_table =  false
-            }
+        itemData() {
+            return  {
+                style_code: null,
+                category_id: null,
+                quantity: null,
+                price_type: null,
+                unit_price: null,
+                unit_price_total : null,
+                gross_price: 0,
+                emblishment_type: null,
+                notes: null,
+                embellishments: [],
+                embellishment_total: 0,
+            };
         },
-        onChangeQuotationNotes(value){
-            this.$emit('quotation-notes', value)
+        addItem() {
+            const items = this.value;
+            items.push(this.item)
+
+            this.$emit('input', items)
+            this.item = this.itemData();
         },
-        onChangeCutAndSewTable(value){
-            this.$emit('cut-and-sew-table', value)
+
+        prepareEmbellishmentsForCutAndSaw() {
+            this.item.embellishments = this.propEmbellishments.map(function (embellishment) {
+                return Object.assign({
+                    position: null,
+                    quantity: 0,
+                    total_cost: 0,
+                    setup_quantity: 0,
+                    total_setup_cost: 0,
+                    total: 0,
+                }, embellishment)
+            });
         },
-        onChangeSublimationsTable(value){
-            this.$emit('sublimations-table', value)
-        }
     }
 }
 </script>
