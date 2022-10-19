@@ -289,7 +289,6 @@ class DatabaseSeeder extends Seeder
             'supplier_id' => $supplierA->id,
             'purchase_order_number' => 'AB11234',
             'invoice_number' => 'ABC12211',
-//            'factory_id' => Factory::find(1) ? Factory::find(1)->id : Factory::factory()->create()->id,
             'factory_id' => Factory::first(),
         ]);
 

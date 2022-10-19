@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Http\Controllers\AccountInvoiceController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CustomerQuotationController;
 use App\Http\Controllers\CustomersController;
@@ -175,6 +176,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/inventory/{materialInventory}/details', [InventoryController::class, 'show'])->name('inventory.show');
+    Route::get('/inventory/{materialInventory}/summary', [InventoryController::class, 'viewInvoiceDetails'])->name('inventory.summary');
 
     Route::get('/suppliers', [SuppliersController::class, 'index'])->name('suppliers.index');
     Route::get('/suppliers/create', [SuppliersController::class, 'create'])->name('suppliers.create');
@@ -239,8 +241,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
     Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
+
     Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
     Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
+
+    Route::get('/accounts/invoices', [AccountInvoiceController::class, 'index'])->name('accounts.invoices');
+    Route::get('/accounts/invoices/create', [AccountInvoiceController::class, 'create'])->name('accounts.invoices.create');
+
 });
 
 Route::post('/customer/quotation', [CustomerQuotationController::class, 'show'])->name('public.customer.quotation');
