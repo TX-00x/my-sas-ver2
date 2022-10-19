@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Http\Controllers\AccountInvoiceController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\ExternalStylesController;
@@ -238,4 +239,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
     Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
+
+    Route::get('/accounts/invoices', [AccountInvoiceController::class, 'index'])->name('accounts.invoices');
+    Route::get('/accounts/invoices/create', [AccountInvoiceController::class, 'create'])->name('accounts.invoices.create');
 });
