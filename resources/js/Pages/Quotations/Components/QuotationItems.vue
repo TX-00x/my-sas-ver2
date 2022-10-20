@@ -2,7 +2,10 @@
     <div>
         <div class="grid grid-cols-4 gap-3">
             <div>
-                <el-select @change="onCategoryChanged" v-model="item.category_id" placeholder="Category">
+                <div>
+                    <label for="category" class="block">Category</label>
+                </div>
+                <el-select @change="onCategoryChanged" name="category" v-model="item.category_id" placeholder="Category">
                     <el-option
                         v-for="category in propCategories"
                         :key="category.id"
@@ -14,7 +17,10 @@
             </div>
 
             <div>
-                <el-select @change="onStyleCodeChange" value-key="id" :disabled="propStyleCodes.length === 0" filterable v-model="item.style_code" placeholder="Style code">
+                <div>
+                    <label for="style_code" class="block">Style code</label>
+                </div>
+                <el-select name="style_code" @change="onStyleCodeChange" value-key="id" :disabled="propStyleCodes.length === 0" filterable v-model="item.style_code" placeholder="Style code">
                     <el-option
                         v-for="item in propStyleCodes"
                         :key="item.id"
@@ -26,10 +32,16 @@
             </div>
 
             <div>
-                <el-input placeholder="Quantity" v-model.number="item.quantity"></el-input>
+                <div>
+                    <label for="quantity" class="block">Quantity</label>
+                </div>
+                <el-input placeholder="Quantity" name="quantity" v-model.number="item.quantity"></el-input>
             </div>
             <div>
-                <el-select @change="onItemPriceChange" placeholder="Default Garment Price" v-model="item.price_type">
+                <div>
+                    <label for="garment_price" class="block">Garment price</label>
+                </div>
+                <el-select @change="onItemPriceChange" name="garment_price" placeholder="Default Garment Price" v-model="item.price_type">
                     <el-option value="default" label="Default" />
                     <el-option value="custom" label="Custom" />
                 </el-select>
@@ -37,13 +49,20 @@
         </div>
         <div class="grid grid-cols-4 gap-3 py-8">
             <div>
-                <el-select v-model="item.type" placeholder="Select embellishment type">
+                <div>
+                    <label for="embellishment_type" class="block">Embellishment type</label>
+                </div>
+                <el-select v-model="item.type" name="embellishment_type" placeholder="Select embellishment type">
                     <el-option value="cut_and_sew" label="Cut and Saw" />
                     <el-option value="sublimation" label="Sublimation" />
                 </el-select>
             </div>
             <div class="col-span-2">
+                <div>
+                    <label for="notes" class="block">Notes</label>
+                </div>
                 <el-input
+                    name="notes"
                     type="textarea"
                     :rows="2"
                     placeholder="Add notes"
@@ -52,12 +71,16 @@
             </div>
             <div>
                 <div class="flex flex-col">
+                    <div>
+                        <label for="custom_price" class="block">Custom price</label>
+                    </div>
                     <el-input
                         v-model="item.unit_price"
                         :disabled="item.price_type !== 'custom'"
                         placeholder="Custom Price"
                         type="number"
                         min="0"
+                        name="custom_price"
                     ></el-input>
                 </div>
             </div>

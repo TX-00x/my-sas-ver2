@@ -106,6 +106,9 @@
                         <div class="flex flex-row justify-start">
                             <div class="grid grid-cols-5 gap-3">
                                 <div>
+                                    <div>
+                                        <label for="region" class="block">Region</label>
+                                    </div>
                                     <el-select value-key="id" v-model="form.freight" placeholder="Region">
                                         <el-option
                                             v-for="freight in propFreightCharges"
@@ -117,13 +120,22 @@
                                     </el-select>
                                 </div>
                                 <div>
-                                    <div class="text-sm text-center">Cost per region: <span class="text-lg">NZD {{ form.freight.amount }}</span></div>
+                                    <div>
+                                        <label for="cost_per_region" class="block">Cost per region</label>
+                                    </div>
+                                    <div class="text-sm text-left"><span class="text-lg">NZD {{ form.freight.amount }}</span></div>
                                 </div>
                                 <div>
-                                    <el-input placeholder="No of boxes" type="number" v-model.number="form.freightBoxesCount"></el-input>
+                                    <div>
+                                        <label for="no_of_boxes" class="block">No of boxes</label>
+                                    </div>
+                                    <el-input-number placeholder="No of boxes" :min="0" v-model="form.freightBoxesCount"></el-input-number>
                                 </div>
                                 <div class="text-sm text-center">
-                                    Total freight charge: <span class="text-lg">NZD {{ form.totalFreightCost = totalFreightCost}}</span>
+                                    <div>
+                                        <label for="total_freight_charge" class="block">Total freight charge</label>
+                                    </div>
+                                    <span class="text-lg">NZD {{ form.totalFreightCost = totalFreightCost}}</span>
                                 </div>
                                 <div>
                                     <el-checkbox v-model="form.freightSurgeAdded" label="Apply 6% air freight surcharge"></el-checkbox>
