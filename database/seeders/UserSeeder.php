@@ -8,35 +8,36 @@ use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+    public CONST ADMIN_USER_1 = 'admin@example.com';
+    public CONST CS_USER_1 = 'test@example.com';
+    public CONST SALES_USER_1 = 'test2@example.com';
+    public CONST ROLE_PRODUCTION_MANAGER_USER_1 = 'pm@example.com';
+    public CONST PURCHASING_OFFICE_USER_1 = 'po@example.com';
+
     public function run()
     {
         User::factory()->create([
-            'email' => 'admin@example.com',
+            'email' => self::ADMIN_USER_1,
             'password' => 'admin'
         ])->assignRole(User::ROLE_ADMINISTRATOR);
 
         User::factory()->create([
-            'email' => 'test@example.com',
+            'email' => self::CS_USER_1,
             'password' => 'test'
         ])->assignRole(User::ROLE_CUSTOMER_SERVICE_AGENT);
 
         User::factory()->create([
-            'email' => 'test2@example.com',
+            'email' => self::SALES_USER_1,
             'password' => 'test2'
         ])->assignRole(User::ROLE_SALES_AGENT);
 
         User::factory()->create([
-            'email' => 'pm@example.com',
+            'email' => self::ROLE_PRODUCTION_MANAGER_USER_1,
             'password' => 'pm'
         ])->assignRole(User::ROLE_PRODUCTION_MANAGER);
 
         User::factory()->create([
-            'email' => 'po@example.com',
+            'email' => self::PURCHASING_OFFICE_USER_1,
             'password' => 'po'
         ])->assignRole(User::ROLE_PURCHASING_OFFICER);
     }

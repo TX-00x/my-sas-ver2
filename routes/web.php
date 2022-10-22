@@ -251,3 +251,4 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 });
 
 Route::post('/customer/quotation', [CustomerQuotationController::class, 'show'])->name('public.customer.quotation');
+//Route::post('/customer/quotation', [CustomerQuotationController::class, 'show'])->name('public.sales.quotation');

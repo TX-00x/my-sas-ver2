@@ -27,41 +27,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-//        User::factory()->create([
-//            'email' => 'test@example.com',
-//            'password' => 'test'
-//        ])->assignRole(User::ROLE_CUSTOMER_SERVICE_AGENT);
-//
-//        User::factory()->create([
-//            'email' => 'test2@example.com',
-//            'password' => 'test2'
-//        ])->assignRole(User::ROLE_SALES_AGENT);
-
-//        $countries = [
-//            [
-//                'name' => 'Sri Lanka',
-//                'sort' => 'LK',
-//            ],
-//            [
-//                'name' => 'New Zealand',
-//                'sort' => 'NZ',
-//            ]
-//        ];
-//
-//        foreach ($countries as $country) {
-//            Country::create($country);
-//        }
-
-//        Factory::factory()->create([
-//            'name' => 'SL Factory',
-//            'country_id' => Country::where('sort', 'LK')->first()->id,
-//        ]);
-//
-//        Factory::factory()->create([
-//            'name' => 'NZ Factory',
-//            'country_id' => Country::where('sort', 'NZ')->first()->id,
-//        ]);
-
         $this->call([
             UserSeeder::class,
             CountrySeeder::class,
@@ -69,51 +34,11 @@ class DatabaseSeeder extends Seeder
             WarehouseSeeder::class,
         ]);
 
-        $user = User::query()->where('email','=', 'test@example.com')->get()->first();
+        $user = User::query()->where('email','=', UserSeeder::CS_USER_1)->get()->first();
 
-        Warehouse::factory()->create([
-            'name' => 'Warehouse 1',
-            'country_id' => Country::where('sort', 'LK')->first()->id,
-        ]);
+        // Customer Creation
 
-        Warehouse::factory()->create([
-            'name' => 'Warehouse 2',
-            'country_id' => Country::where('sort', 'NZ')->first()->id,
-        ]);
-
-        $logos = [
-            [
-                'file_path' => 'WtbxweLh4LdgK5wFFSAEwTuO1YXNEaTl4VZRjbQf.jpg'
-            ],
-            [
-                'file_path' => '2oRrAeFGKPFqRDMlON4BMue8DlK0CHlEkx11eMyr.png'
-            ]
-        ];
-
-        foreach ($logos as $logo) {
-            File::create($logo);
-        }
-
-        $logo1 = File::orderBy('id', 'asc')->first();
-        $logo2 = File::orderBy('id', 'desc')->first();
-
-        $csAgent = User::role(User::ROLE_CUSTOMER_SERVICE_AGENT)->first();
-        $salesAgent = User::role(User::ROLE_SALES_AGENT)->first();
-
-        Customer::factory()->create([
-            'name' => 'John Doe',
-            'cs_agent_id' => $csAgent->id,
-            'sales_agent_id' => $salesAgent->id,
-            'logo_id' => $logo1->id
-        ]);
-
-        Customer::factory()->create([
-            'name' => 'Jane Doe',
-            'cs_agent_id' => $csAgent->id,
-            'sales_agent_id' => $salesAgent->id,
-            'logo_id' => $logo2->id
-        ]);
-
+        // Categories Creation
         $categories = collect([
             'Basketball',
             'Netball',
@@ -131,6 +56,7 @@ class DatabaseSeeder extends Seeder
             ]);
         });
 
+        // Types Creation
         $types = collect([
             'T-SHIRT/ POLO',
             'LONG SLEEVE T-SHIRT/POLO',
@@ -142,8 +68,6 @@ class DatabaseSeeder extends Seeder
             'SINGLET',
             'POLYESTER CARGO SHORT',
         ]);
-
-
         $types->each(function ($type) {
             ItemType::factory()->create([
                 'name' => $type

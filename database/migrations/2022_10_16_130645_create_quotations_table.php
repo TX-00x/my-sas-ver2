@@ -21,6 +21,7 @@ return new class extends Migration
             $table->float('quotation_gross_amount');
             $table->boolean('payment_term_20')->nullable();
             $table->foreignId('created_by_id')->constrained('users');
+            $table->boolean('requires_sales_approval');
             $table->timestamp('sales_action_taken_by')->nullable();
             $table->string('sales_action')->nullable();
             $table->timestamp('customer_action_taken_by')->nullable();
