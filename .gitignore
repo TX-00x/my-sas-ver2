@@ -17,4 +17,4 @@ npm-debug.log
 yarn-error.log
 .idea/*
 /docker
-public/mix-manifest.json
+./public/mix-manifest.json
