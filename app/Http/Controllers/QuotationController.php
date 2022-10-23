@@ -138,17 +138,15 @@ class QuotationController extends Controller
         ]);
     }
 
-    public function salesAction(Quotation $quotation)
+    public function salesAction(Quotation $quotation, Request $request)
     {
-        $quotation->sales_action_taken_by_id = auth()->user()->id;
-        $quotation->sales_action = \request()->input('action'); // approved, rejected
-        if (\request()->input('action') == 'rejected') {
-            $quotation->sales_rejected_reason = \request()->input('reason'); // approved, rejected
+        $aggregateRoot = QuotationAggregateRoot::retrieve($quotation->aggregate_id);
+        if ($request->input('action') == 'approved') {
+            $aggregateRoot->salesApprovedQuotation(auth()->user()->id);
+        } else {
+            $aggregateRoot->salesRejectedQuotation(auth()->user()->id, $request->input('reason'));
         }
 
-        $quotation->save();
-
-        // send email to cs agent
-        // send email to customer for approval
+        $aggregateRoot->persist();
     }
 }

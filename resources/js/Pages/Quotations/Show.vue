@@ -41,20 +41,33 @@
                 <div v-if="quotation.sales_action_taken_by">
                     <span class="text-xs text-gray-600" >Sales Action taken By: <b>{{ quotation.sales_action_taken_by.name}}</b> </span>
                     <br>
-                    <span
-                        class="text-xs text-gray-600 capitalize"
-                        :class="{'text-red-600': quotation.sales_action === 'rejected', 'text-green-600': quotation.sales_action === 'approved'}"
-                    >
-                    Sales Action: <b>{{ quotation.sales_action}}</b>
-                </span>
+                    <span class="text-xs text-gray-600 capitalize">
+                    Sales Action:
+                        <b :class="{'text-red-600': quotation.sales_action === 'rejected', 'text-green-600': quotation.sales_action === 'approved'}" >
+                        {{ quotation.sales_action}}
+                    </b>
+                    </span>
                     <br>
-                    <span v-if="quotation.sales_action === 'rejected'" class="text-xs text-red-600">Rejected Reason: <b>{{ quotation.sales_rejected_reason}}</b></span>
+                    <span v-if="quotation.sales_action === 'rejected'"  class="text-xs text-gray-600">
+                        Rejected Reason:  <div class=" text-red-600" v-html="quotation.sales_rejected_reason"></div>
+                    </span>
                 </div>
 
                 <div v-if="quotation.sales_action === 'approved'">
-                    <div v-if="quotation.customer_action_taken_by == null">
+                    <div v-if="quotation.customer_action == null">
                         <span class="text-xs text-gray-600" >Customer Approval : <b class="text-gray-400">(Approval pending)</b> </span>
                     </div>
+
+                    <div v-if="quotation.customer_action == 'approved'">
+                        <span class="text-xs text-gray-600" >Customer Action : <b class="text-green-400">Approved</b> </span>
+                    </div>
+
+                    <div v-if="quotation.customer_action == 'rejected'">
+                        <span class="text-xs text-gray-600" >Customer Action : <b class="text-red-600">Rejected</b> </span>
+                        <br>
+                        <span class="text-xs text-gray-600">Rejected Reason:  <div class="text-red-600" v-html="quotation.sales_rejected_reason"></div></span>
+                    </div>
+
                 </div>
 
             </div>

@@ -28,10 +28,11 @@ class QuotationResource extends JsonResource
             'requires_sales_approval' => $this->requires_sales_approval && $this->sales_action === null,
             'sales_action_taken_by' => new UserResource($this->sales_action_taken_by),
             'sales_action' => $this->sales_action,
-            'sales_rejected_reason' => $this->sales_rejected_reason,
-            'customer_action_taken_by' => new UserResource($this->customer_action_taken_by),
+            'sales_rejected_reason' => nl2br($this->sales_rejected_reason),
+//            'customer_action_taken_by' => new UserResource($this->customer_action_taken_by),
             'customer_action' => $this->customer_action,
             'customer_rejected_reason' => $this->customer_rejected_reason,
+            'customer_action_taken_at' => $this->customer_action_taken_at?->toDateTimeString(),
         ];
     }
 }

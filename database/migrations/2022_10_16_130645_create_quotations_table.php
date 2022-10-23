@@ -26,8 +26,9 @@ return new class extends Migration
             $table->boolean('requires_sales_approval');
             $table->foreignId('sales_action_taken_by_id')->nullable()->constrained('users');
             $table->string('sales_action')->nullable();
+            $table->timestamp('sales_action_taken_at')->nullable();
             $table->longText('sales_rejected_reason')->nullable();
-            $table->foreignId('customer_action_taken_by_id')->nullable()->constrained('users');
+            $table->timestamp('customer_action_taken_at')->nullable();
             $table->string('customer_action')->nullable();
             $table->longText('customer_rejected_reason')->nullable();
             $table->timestamps();

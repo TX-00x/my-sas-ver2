@@ -12,6 +12,9 @@ class Quotation extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $dates = [
+        'customer_action_taken_at'
+    ];
 
     public function items(): HasMany
     {

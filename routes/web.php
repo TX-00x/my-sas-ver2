@@ -250,5 +250,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/quotations/{quotation}/sales/action', [QuotationController::class, 'salesAction'])->name('quotations.sales.action');
 });
 
-Route::post('/customer/quotation/{quotation:number}', [CustomerQuotationController::class, 'show'])->name('public.customer.quotation');
-//Route::post('/customer/quotation', [CustomerQuotationController::class, 'show'])->name('public.sales.quotation');
+Route::get('/customer/quotation/{quotation:number}', [CustomerQuotationController::class, 'show'])->name('public.customer.quotation');
+Route::post('/customer/quotation/{quotation:number}', [CustomerQuotationController::class, 'store'])->name('public.customer.quotation.store');
