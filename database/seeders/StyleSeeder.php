@@ -15,6 +15,10 @@ use Illuminate\Database\Seeder;
 
 class StyleSeeder extends Seeder
 {
+    const STYLE_CODE_TEE_001 = 'tee-001';
+    const STYLE_CODE_TEE_002 = 'tee-002';
+
+
     public function run()
     {
         // Normal Style
@@ -28,8 +32,8 @@ class StyleSeeder extends Seeder
 
         /** @var Style $style */
         $style = Style::factory()->create([
-            'code' => 'TEE 01',
-            'name' => 'Original Tee',
+            'code' => self::STYLE_CODE_TEE_001,
+            'name' => 'TEE 001',
             'item_type_id' => $itemType->id,
             'belongs_to' => Style::INTERNAL,
             'styles_type' => Style::GENERAL,
@@ -51,7 +55,7 @@ class StyleSeeder extends Seeder
 
         /** @var Style $style */
         $style2 = Style::factory()->create([
-            'code' => 'TOP 222SW FB SCP',
+            'code' => self::STYLE_CODE_TEE_002,
             'name' => 'Women\'s Sublimated Training Singlet (TOP 222SW FB SCP)',
             'item_type_id' => $itemType->id,
             'customer_id' => $customer->id,
@@ -70,5 +74,15 @@ class StyleSeeder extends Seeder
         $style2->categories()->syncWithoutDetaching($category->id);
         $style2->sizes()->syncWithoutDetaching([$size1->id, $size2->id]);
         $stylePanel->fabrics()->syncWithoutDetaching(Materials::factory()->create()->id);
+    }
+
+    public static function findTee001()
+    {
+        return Style::query()->where('code', '=', self::STYLE_CODE_TEE_001)->get()->first();
+    }
+
+    public static function findTee002()
+    {
+        return Style::query()->where('code', '=', self::STYLE_CODE_TEE_002)->get()->first();
     }
 }

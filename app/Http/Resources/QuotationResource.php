@@ -16,7 +16,7 @@ class QuotationResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'number' => 'Q-'. $this->id,
+            'number' => $this->number,
             'created_at' => $this->created_at->toDateTimeString(),
             'customer' => new CustomerResource($this->customer),
             'items' => ItemResource::collection($this->whenLoaded('items')),
@@ -25,6 +25,13 @@ class QuotationResource extends JsonResource
             'sales_agent' => new UserResource($this->sales_agent),
             'customer_agent' => new UserResource($this->customer_agent),
             'created_by' => new UserResource($this->created_by),
+            'requires_sales_approval' => $this->requires_sales_approval && $this->sales_action === null,
+            'sales_action_taken_by' => new UserResource($this->sales_action_taken_by),
+            'sales_action' => $this->sales_action,
+            'sales_rejected_reason' => $this->sales_rejected_reason,
+            'customer_action_taken_by' => new UserResource($this->customer_action_taken_by),
+            'customer_action' => $this->customer_action,
+            'customer_rejected_reason' => $this->customer_rejected_reason,
         ];
     }
 }

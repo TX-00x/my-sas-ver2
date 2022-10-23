@@ -9,6 +9,9 @@ use Illuminate\Database\Seeder;
 
 class CustomerSeeder extends Seeder
 {
+    const CUSTOMER_1_EMAIL = 'customer1@example.com';
+    const CUSTOMER_2_EMAIL = 'customer2@example.com';
+
     public function run()
     {
         $customerLogos = [
@@ -26,19 +29,31 @@ class CustomerSeeder extends Seeder
         $salesAgent = User::role(User::ROLE_SALES_AGENT)->first();
 
         $customer1 = Customer::factory()->create([
-            'name' => 'John Doe',
-            'logo_id' => $logo1->id
+            'name' => 'Customer 1',
+            'logo_id' => $logo1->id,
+            'email' => self::CUSTOMER_1_EMAIL,
         ]);
 
-        $customer1->salesAgent()->attach($salesAgent);
-        $customer1->csAgent()->attach($csAgent);
+        $customer1->salesAgents()->attach($salesAgent);
+        $customer1->customerSupportAgents()->attach($csAgent);
 
         $customer2 = Customer::factory()->create([
-            'name' => 'Jane Doe',
-            'logo_id' => $logo2->id
+            'name' => 'Customer 2',
+            'logo_id' => $logo2->id,
+            'email' => self::CUSTOMER_2_EMAIL,
         ]);
 
-        $customer2->salesAgent()->attach($salesAgent);
-        $customer2->csAgent()->attach($csAgent);
+        $customer2->salesAgents()->attach($salesAgent);
+        $customer2->customerSupportAgents()->attach($csAgent);
+    }
+
+    public static function customer1(): Customer
+    {
+        return Customer::query()->where('email', '=', self::CUSTOMER_1_EMAIL)->get()->first();
+    }
+
+    public static function customer2(): Customer
+    {
+        return Customer::query()->where('email', '=', self::CUSTOMER_2_EMAIL)->get()->first();
     }
 }

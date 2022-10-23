@@ -99,8 +99,9 @@ class CreateQuotationTest extends TestCase
                 surgeAdded: true,
                 totalAmount:10.99,
             ),
-            itemsNetPrice:216.81,
-            grossAmount:120.99,
+            paymentTerm20: true,
+            itemsNetPrice: 216.81,
+            grossAmount: 120.99,
         );
 
 

@@ -27,7 +27,7 @@
                     <div>
                         <div class="text-gray-500 text-xs">Quotation ID</div>
                         <div class="text-sm text-gray-700 font-semibold">
-                            Q-{{ quotation.id }}
+                            {{ quotation.number }}
                         </div>
                     </div>
 

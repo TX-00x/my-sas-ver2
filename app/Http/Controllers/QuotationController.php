@@ -62,6 +62,8 @@ class QuotationController extends Controller
 
     public function store(Request $request)
     {
+        $aggregateId = Str::uuid()->toString();
+
         $items = [];
         foreach ($request->input('items') as $item) {
             $item = (object) $item;
@@ -96,6 +98,7 @@ class QuotationController extends Controller
         }
 
         $data = new QuotationCreateData(
+            aggregateId: $aggregateId,
             createdById: auth()->id(),
             customerId: $request->input('customer_id'),
             salesAgentId: $request->input('sales_agent_id'),
@@ -118,7 +121,8 @@ class QuotationController extends Controller
             grossAmount: (float) $request->input('gross_price'),
         );
 
-        QuotationAggregateRoot::retrieve(Str::uuid()->toString())
+
+        QuotationAggregateRoot::retrieve($aggregateId)
             ->createQuotation($data)
             ->persist();
 
@@ -132,5 +136,19 @@ class QuotationController extends Controller
         return Inertia::render('Quotations/Show', [
             'propQuotation' => (new QuotationResource($quotation)),
         ]);
+    }
+
+    public function salesAction(Quotation $quotation)
+    {
+        $quotation->sales_action_taken_by_id = auth()->user()->id;
+        $quotation->sales_action = \request()->input('action'); // approved, rejected
+        if (\request()->input('action') == 'rejected') {
+            $quotation->sales_rejected_reason = \request()->input('reason'); // approved, rejected
+        }
+
+        $quotation->save();
+
+        // send email to cs agent
+        // send email to customer for approval
     }
 }

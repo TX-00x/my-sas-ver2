@@ -42,4 +42,14 @@ class Quotation extends Model
     {
         return $this->belongsTo(User::class, 'created_by_id');
     }
+
+    public function sales_action_taken_by(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'sales_action_taken_by_id');
+    }
+
+    public function customer_action_taken_by(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'customer_action_taken_by_id');
+    }
 }

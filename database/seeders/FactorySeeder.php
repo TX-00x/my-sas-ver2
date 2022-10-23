@@ -20,5 +20,15 @@ class FactorySeeder extends Seeder
             'country_id' => Country::where('sort', 'NZ')->first()->id,
         ]);
     }
+
+    public static function getSLFactory(): Factory
+    {
+        return Factory::query()->where('name', 'SL Factory')->get()->first();
+    }
+
+    public static function getNZFactory(): Factory
+    {
+        return Factory::query()->where('name', 'NZ Factory')->get()->first();
+    }
 }
 

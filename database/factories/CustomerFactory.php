@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class CustomerFactory extends Factory
 {
@@ -21,9 +22,11 @@ class CustomerFactory extends Factory
      */
     public function definition()
     {
+
+
         return [
-            'name' => 'John Doe',
-            'email' => 'test@example.com',
+            'name' => $this->faker->name('male'),
+            'email' => Str::random() . '-test@example.com',
             'description' => 'Lorem Ipsum....'
         ];
     }

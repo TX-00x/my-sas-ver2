@@ -9,6 +9,7 @@ class QuotationCreateData
      * @param $items QuotationItemData[]
      */
     public function __construct(
+        public string $aggregateId,
         public int                  $createdById,
         public int                  $customerId,
         public int                  $salesAgentId,

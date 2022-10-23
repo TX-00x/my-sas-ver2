@@ -4,32 +4,53 @@ namespace App\Domains\FactoryOrder\Actions;
 
 use App\Domains\FactoryOrder\Data\QuotationCreateData;
 use App\Domains\FactoryOrder\Data\QuotationCreateEmbellishmentData;
+use App\Domains\FactoryOrder\Data\QuotationFreightData;
 use App\Domains\FactoryOrder\Data\QuotationItemData;
 use App\Models\Embellishment;
 use App\Models\Quotation;
 use App\Models\QuotationFreight;
 use App\Models\QuotationItemEmbellishment;
+use App\Notifications\InformSalesWhenQuotationIsCreated;
 use Dflydev\DotAccessData\Data;
 
 class CreateQuotation
 {
     public function execute(QuotationCreateData $data)
     {
-        $quotation = Quotation::create([
+        $quotation = $this->createQuotation($data);
+        $this->createItems($data->items, $quotation);
+
+        $freight = $this->createFreightCharges($data->freight, $quotation);
+
+        $quotation->items_net_amount = $quotation->items->sum('item_gross_total');
+        $quotation->quotation_gross_amount = $freight->total_freight_cost + $quotation->items_net_amount;
+        $quotation->save();
+    }
+
+    private function createQuotation(QuotationCreateData $data): Quotation
+    {
+        $existingCount = Quotation::count();
+        $number = sprintf("%06d", $existingCount + 1);
+
+        return Quotation::create([
+            'aggregate_id' => $data->aggregateId,
+            'number' => 'Q-' . $number,
             'customer_id' => $data->customerId,
             'sales_agent_id' => $data->salesAgentId,
             'customer_agent_id' => $data->customerSalesAgentId,
-//            'quotation_freight_id' => $freight->id,
             'type' => $data->type,
             'club' => $data->club,
             'attention_person' => $data->attentionPerson,
             'items_net_amount' => 0, // to be overridden
             'quotation_gross_amount' => 0, //to be overridden
             'created_by_id' => $data->createdById,
+            'requires_sales_approval' => true, // @todo this needs to be sent from FE
         ]);
+    }
 
-        $itemsGrossTotal = 0;
-        collect($data->items)->each(function ($itemData) use (&$itemsGrossTotal, $quotation) {
+    private function createItems(array $items, Quotation $quotation)
+    {
+        collect($items)->each(function ($itemData) use (&$itemsGrossTotal, $quotation) {
             /** @var QuotationItemData $itemData */
             if (is_array($itemData)) {
                 $itemData = (object) $itemData; // this casting is due to event sourcing replay issue
@@ -76,31 +97,25 @@ class CreateQuotation
             $item->embellishment_total = $embellishmentsTotal;
             $item->item_gross_total = $embellishmentsTotal + $item->unit_price_total;
             $item->save();
-
-            $itemsGrossTotal = $itemsGrossTotal + $item->item_gross_total;
         });
+    }
 
-        $quotation->items_net_amount = $itemsGrossTotal;
-        $quotation->save();
-
-        // Freight Charges
-        $freightCost = ($data->freight->unitAmount * $data->freight->boxCount);
-        $surchargePercentageValue = $data->freight->surgeAdded ? $data->freight->surgePercentage : 0;
+    private function createFreightCharges(QuotationFreightData $freightData, Quotation $quotation): QuotationFreight
+    {
+        $freightCost = ($freightData->unitAmount * $freightData->boxCount);
+        $surchargePercentageValue = $freightData->surgeAdded ? $freightData->surgePercentage : 0;
         $surcharge = 0;
         if ($surchargePercentageValue > 0) {
             $surcharge = $freightCost * ($surchargePercentageValue/100);
         }
         $totalFreightCost = $surcharge + $freightCost;
-        $freight = QuotationFreight::create([
+        return QuotationFreight::create([
             'quotation_id' => $quotation->id,
-            'freight_charge_id' => $data->freight->freightId,
-            'freight_cost' => $data->freight->unitAmount,
-            'boxes_count' => $data->freight->boxCount,
+            'freight_charge_id' => $freightData->freightId,
+            'freight_cost' => $freightData->unitAmount,
+            'boxes_count' => $freightData->boxCount,
             'surcharge_percentage' => $surchargePercentageValue,
             'total_freight_cost' => $totalFreightCost,
         ]);
-
-        $quotation->quotation_gross_amount = $freight->total_freight_cost + $quotation->items_net_amount;
-        $quotation->save();
     }
 }

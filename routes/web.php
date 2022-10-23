@@ -247,8 +247,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/accounts/invoices', [AccountInvoiceController::class, 'index'])->name('accounts.invoices');
     Route::get('/accounts/invoices/create', [AccountInvoiceController::class, 'create'])->name('accounts.invoices.create');
-
+    Route::post('/quotations/{quotation}/sales/action', [QuotationController::class, 'salesAction'])->name('quotations.sales.action');
 });
 
-Route::post('/customer/quotation', [CustomerQuotationController::class, 'show'])->name('public.customer.quotation');
+Route::post('/customer/quotation/{quotation:number}', [CustomerQuotationController::class, 'show'])->name('public.customer.quotation');
 //Route::post('/customer/quotation', [CustomerQuotationController::class, 'show'])->name('public.sales.quotation');

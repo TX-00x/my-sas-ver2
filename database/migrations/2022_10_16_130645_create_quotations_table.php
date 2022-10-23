@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('quotations', function (Blueprint $table) {
             $table->id();
+            $table->uuid('aggregate_id');
+            $table->string('number');
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('sales_agent_id')->constrained('users');
             $table->foreignId('customer_agent_id')->constrained('users');
@@ -17,15 +19,17 @@ return new class extends Migration
             $table->string('type');
             $table->string('club');
             $table->string('attention_person');
-            $table->float('items_net_amount');
-            $table->float('quotation_gross_amount');
+            $table->decimal('items_net_amount', 20, 2);
+            $table->decimal('quotation_gross_amount', 20, 2);
             $table->boolean('payment_term_20')->nullable();
             $table->foreignId('created_by_id')->constrained('users');
             $table->boolean('requires_sales_approval');
-            $table->timestamp('sales_action_taken_by')->nullable();
+            $table->foreignId('sales_action_taken_by_id')->nullable()->constrained('users');
             $table->string('sales_action')->nullable();
-            $table->timestamp('customer_action_taken_by')->nullable();
+            $table->longText('sales_rejected_reason')->nullable();
+            $table->foreignId('customer_action_taken_by_id')->nullable()->constrained('users');
             $table->string('customer_action')->nullable();
+            $table->longText('customer_rejected_reason')->nullable();
             $table->timestamps();
         });
     }

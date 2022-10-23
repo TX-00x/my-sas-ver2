@@ -15,12 +15,12 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories');
             $table->integer('quantity');
             $table->string('price_type');
-            $table->float('unit_price');
-            $table->float('unit_price_total');
-            $table->float('embellishment_total');
+            $table->decimal('unit_price', 20, 2);
+            $table->decimal('unit_price_total', 20, 2);
+            $table->decimal('embellishment_total', 20, 2);
             $table->string('production_type');
             $table->longText('note')->nullable();
-            $table->float('item_gross_total');
+            $table->decimal('item_gross_total', 20, 2);
             $table->timestamps();
         });
     }
