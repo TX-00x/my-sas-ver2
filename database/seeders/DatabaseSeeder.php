@@ -61,12 +61,15 @@ class DatabaseSeeder extends Seeder
 //            'name' => 'NZ Factory',
 //            'country_id' => Country::where('sort', 'NZ')->first()->id,
 //        ]);
+
         $this->call([
             UserSeeder::class,
             CountrySeeder::class,
             FactorySeeder::class,
             WarehouseSeeder::class,
         ]);
+
+        $user = User::query()->where('email','=', 'test@example.com')->get()->first();
 
         Warehouse::factory()->create([
             'name' => 'Warehouse 1',

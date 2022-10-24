@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Customer extends Model implements Auditable
@@ -31,9 +32,19 @@ class Customer extends Model implements Auditable
         return $this->belongsTo(User::class, 'cs_agent_id');
     }
 
+    public function customerSupportAgents(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class,'customer_sale_agent', 'customer_id', 'user_id');
+    }
+
     public function salesAgent()
     {
         return $this->belongsTo(User::class, 'sales_agent_id');
+    }
+
+    public function salesAgents(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'customer_customer_service_agent', 'customer_id', 'user_id');
     }
 
     public function logo()

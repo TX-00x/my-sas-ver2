@@ -27,8 +27,8 @@ class UpdateCustomerRequest extends FormRequest
             'name' => 'required|string|min:2|max:100',
             'email' => 'required|email',
             'description' => 'string|max:255',
-            'cs_agent_id' => 'required|integer',
-            'sales_agent_id' => 'required|integer',
+//            'cs_agent_id' => 'required|integer',
+//            'sales_agent_id' => 'required|integer',
             'logo_id' => 'required|integer'
         ];
     }

@@ -20,7 +20,7 @@ class FileRepository implements FileRepositoryInterface
 
     public function find($id)
     {
-        $file = File::query()->find($id);
+        $file = File::query()->findOrFail($id);
         $url = asset('storage/uploads/'.$file->file_path);
 
         return $url;
