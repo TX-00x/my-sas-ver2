@@ -133,8 +133,9 @@ class StockOutController extends Controller
             }
 
             $invoices = MaterialInvoice::query()
-                ->where('supplier_id',$supplierId)
-                ->where('factory_id',$factoryId)
+                ->with('inventorySummaries')
+                ->where('supplier_id', $supplierId)
+                ->where('factory_id', $factoryId)
                 ->select('id','invoice_number')->get();
         }
 

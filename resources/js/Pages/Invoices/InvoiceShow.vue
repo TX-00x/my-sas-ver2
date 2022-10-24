@@ -88,52 +88,67 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-gray-800 uppercase tracking-wide text-xs font-bold">
+                                    class="px-6 py-3 text-right text-gray-800 uppercase tracking-wide text-xs font-bold">
                                     Material Name
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-gray-800 uppercase tracking-wide text-xs font-bold">
+                                    class="px-6 py-3 text-right text-gray-800 uppercase tracking-wide text-xs font-bold">
                                     Colour
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-gray-800 uppercase tracking-wide text-xs font-bold">
+                                    class="px-6 py-3 text-right text-gray-800 uppercase tracking-wide text-xs font-bold">
                                     Quantity
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-gray-800 uppercase tracking-wide text-xs font-bold">
+                                    class="px-6 py-3 text-right text-gray-800 uppercase tracking-wide text-xs font-bold">
                                     Price
                                 </th>
                                 <th scope="col"
-                                    class="px-6 py-3 text-left text-gray-800 uppercase tracking-wide text-xs font-bold">
+                                    class="px-6 py-3 text-right text-gray-800 uppercase tracking-wide text-xs font-bold">
                                     Currency
                                 </th>
                             </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                             <tr v-for="(item, index) in invoice[0].items">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ item.variation.material.name }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ item.variation.colour.name }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ item.quantity }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="text-sm font-medium text-gray-900">
-                                        {{ item.price }}
+                                        {{ item.sub_total }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="text-sm font-medium text-gray-900">
                                         {{ item.currency.toUpperCase() }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr v-if="this.invoice[0].items.length > 0">
+                                <td class="px-6 py-4 font-bold whitespace-nowrap text-right" colspan="2">
+                                    Total
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{total_qty}}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{this.invoice[0].items[0].currency.toUpperCase()}} {{total_amount}}
                                     </div>
                                 </td>
                             </tr>
@@ -155,6 +170,20 @@ export default {
         invoice: {
             type: Array,
             required: true
+        }
+    },
+    data(){
+        return {
+            total_qty: 0,
+            total_amount: 0,
+        }
+    },
+    mounted() {
+        this.total_amount = 0;
+        this.total_qty = 0;
+        for(let item of this.invoice[0].items) {
+            this.total_amount = (((parseFloat(this.total_amount) + parseFloat(item.sub_total)) * 100) / 100).toFixed(2);
+            this.total_qty = parseFloat(this.total_qty) + parseFloat(item.quantity);
         }
     },
     methods: {

@@ -59,7 +59,7 @@
 
                                 <th scope="col"
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    P.O Number
+                                    Order ID
                                 </th>
 
                                 <th scope="col"
@@ -76,17 +76,6 @@
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Other Reason
                                 </th>
-
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Unit Price
-                                </th>
-
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Total Price
-                                </th>
-
                             </tr>
                             </thead>
 
@@ -126,10 +115,8 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div v-if="stock.invoice_item">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ stock.invoice_item.invoice.purchase_order_number }}
-                                        </div>
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ stock.out_order_id }}
                                     </div>
                                 </td>
 
@@ -150,18 +137,6 @@
                                         {{ stock.reason }}
                                     </div>
                                 </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">
-                                        {{ stock.in_unit_price }} {{ stock.in_unit_currency }}
-                                    </div>
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">
-                                        {{ showTotalPrice(stock.total_price) }} {{ stock.in_unit_currency }}
-                                    </div>
-                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -178,14 +153,29 @@
             </template>
 
             <template #content>
-                <div class="flex flex-row justify-center py-5">
-                    <div class="w-1/2">
-                        <label for="reason" class="block text-sm font-medium text-gray-700">Reason</label>
-                        <input v-model="adjustment.reason" type="text" name="reason" id="reason"
-                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                    </div>
-                </div>
+<!--                <div class="flex flex-row justify-start py-5">-->
+<!--                    <div class="w-1/2">-->
+<!--                        <label for="reason" class="block text-sm font-medium text-gray-700">Reason</label>-->
+<!--                        <input v-model="adjustment.reason" type="text" name="reason" id="reason"-->
+<!--                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">-->
+<!--                    </div>-->
+<!--                </div>-->
 
+                <div class="py-4">
+                    <el-row :gutter="20">
+                        <el-col :span="2">
+                            <div class="mt-5 w-6 h-6">
+                            </div>
+                        </el-col>
+                        <el-col :span="20">
+                            <div class="w-1/2">
+                                <label for="reason" class="block text-base font-medium text-gray-700">Reason</label>
+                                <input v-model="adjustment.reason" type="text" name="reason" id="reason"
+                                       class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                        </el-col>
+                    </el-row>
+                </div>
                 <div>
                     <el-row :gutter="20" v-for="(item, index) in adjustment.invoice_usages" :key="index">
                         <el-col :span="2">

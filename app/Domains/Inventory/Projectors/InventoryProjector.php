@@ -9,6 +9,7 @@ use App\Domains\Inventory\Events\Internal\StockAddedViaStockAdjust;
 use App\Domains\Inventory\Events\Internal\StockRemoved;
 use App\Domains\Inventory\Events\Internal\StockRemovedManually;
 use App\Domains\Inventory\Events\Internal\StockRemovedViaStockAdjust;
+use App\Domains\Invoices\Dtos\InvoiceItem;
 use App\Models\InventoryLog;
 use App\Models\InventorySummary;
 use App\Models\MaterialInventory;
@@ -76,6 +77,7 @@ class InventoryProjector extends Projector
             [
                 'in' => $stockAdded->quantity,
                 'out' => 0,
+                'balance' => $stockAdded->quantity,
                 'unit_price' => $materialInvoiceItem->unit_price,
                 'total_price' => $materialInvoiceItem->sub_total,
             ]
@@ -120,6 +122,9 @@ class InventoryProjector extends Projector
             $totalValueAdded = $invoice["usage"] * $summery->unit_price;
             $summery->total_price = $summery->total_price + $totalValueAdded;
             $summery->save();
+            $summery->refresh();
+            $summery->balance = $summery->in - abs($summery->out);
+            $summery->save();
         }
     }
 
@@ -159,6 +164,7 @@ class InventoryProjector extends Projector
                 ->first();
 
             $summery->out = $summery->out + $invoice->usage;
+            $summery->balance = $summery->in - $summery->out;
             $totalValueReduced = $invoice->usage * $summery->unit_price;
             $summery->total_price = $summery->total_price - $totalValueReduced;
             $summery->save();
@@ -191,19 +197,19 @@ class InventoryProjector extends Projector
             'updated_at' => $stockRemovedViaStockAdjust->createdAt(),
         ]);
 
-        foreach ($stockRemovedViaStockAdjust->invoices as $invoice) {
-            $materialInvoiceItem = MaterialInvoiceItem::find($invoice["invoice"]["id"]);
+        foreach ($stockRemovedViaStockAdjust->invoices as $invoiceData) {
+            $materialInvoiceItem = MaterialInvoiceItem::find($invoiceData["invoiceData"]["id"]);
 
-            $summery = InventorySummary::query()
+            $invoice = InventorySummary::query()
                 ->where('material_inventory_id', '=', $materialInventory->id)
                 ->where('material_invoice_id', '=', $materialInvoiceItem->id)
                 ->get()
                 ->first();
 
-            $summery->out = $summery->out + $invoice["usage"];
-            $totalValueReduced = $invoice["usage"] * $summery->unit_price;
-            $summery->total_price = $summery->total_price - abs($totalValueReduced);
-            $summery->save();
+            $invoice->out = abs($invoice->out + abs($invoiceData["usage"]));
+            $invoice->balance = $invoice->in - $invoice->out;
+            $invoice->total_price = $invoice->balance * $invoice->unit_price;
+            $invoice->save();
         }
     }
 
@@ -216,6 +222,22 @@ class InventoryProjector extends Projector
     {
         return InventoryLog::query()
             ->where('material_inventories_aggregate_id', $aggregateRootId)
+            ->latest()
+            ->limit(1)
+            ->first();
+    }
+
+    private function lastInventorySummary(string $aggregateRootId)
+    {
+        $inventoryLog = InventoryLog::query()
+            ->where('material_inventories_aggregate_id', $aggregateRootId)
+            ->latest()
+            ->limit(1)
+            ->first();
+
+        $inventoryLogInvoiceId = MaterialInvoiceItem::find($inventoryLog->in_invoice_item_id)->material_invoice_id;
+
+        return InventorySummary::query()->where('material_invoice_id', $inventoryLogInvoiceId)
             ->latest()
             ->limit(1)
             ->first();

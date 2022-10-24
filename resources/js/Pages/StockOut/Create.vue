@@ -249,7 +249,7 @@
                                                             :options="invoices"
                                                             v-model="item.invoice"
                                                             @input="styleSelected"
-                                                            @change="changeAddStockItemButtonStatus"
+                                                            @change="changeAddStockItemButtonStatus($event, index)"
                                                         ></app-select>
                                                     </div>
                                                 </el-col>
@@ -302,6 +302,11 @@
                                         <div v-show="showTotalInvoiceUsageError" class="text-sm text-red-600 font-bold">
                                             Total invoice usage is greater than requested total usage!
                                         </div>
+
+                                        <div v-show="showInvoiceUsageExceedError" class="text-sm text-red-600 font-bold">
+                                            Invoice usage exceeds the invoice's available balance!
+                                        </div>
+
                                         <div v-show="stockItemErrors" class="text-sm text-red-600 font-bold">
                                             Invalid inputs entered. Please check the form and submit again.
                                         </div>
@@ -518,6 +523,7 @@ export default {
             isItemReadOnly: false,
             showTotalInvoiceUsageError: false,
             stockItemErrors: false,
+            showInvoiceUsageExceedError: false,
             stockItemSuccess: false,
             addStockItembutton:true,
         }
@@ -565,7 +571,7 @@ export default {
                 this.stockOutItem.invoice_usages.splice(index, 1)
             }
         },
-        changeAddStockItemButtonStatus(value) {
+        changeAddStockItemButtonStatus(value, index) {
             if (value === "" || value === null || value === {}) {
                 this.addStockItembutton = false
             }
@@ -574,6 +580,12 @@ export default {
             this.stockOutItem.invoice_usages.forEach((element) => {
                 if(Object.keys(element.invoice).length === 0 || element.usage === null) {
                     this.stockItemErrors = true
+                }
+                if (element.usage > element.invoice.inventory_summaries[0].balance) {
+                    this.stockItemErrors = true
+                }
+                if (element.usage <= element.invoice.inventory_summaries[0].balance) {
+                    this.stockItemErrors = false
                 }
             });
 
@@ -757,6 +769,16 @@ export default {
             if (totalInvoiceUsage <= this.stockOutItem.usage) {
                 this.showTotalInvoiceUsageError = false
             }
+
+            if(value > this.stockOutItem.invoice_usages[index].invoice.inventory_summaries[0].balance){
+                this.addStockItembutton = false
+                this.showInvoiceUsageExceedError = true
+            }
+
+            if (value <= this.stockOutItem.invoice_usages[index].invoice.inventory_summaries[0].balance){
+                this.addStockItembutton = true
+                this.showInvoiceUsageExceedError = false
+            }
         },
         isValidItem() {
             return true;
@@ -783,6 +805,10 @@ export default {
         handleAddItemButtonAvailability(){
             if (!this.stockAvailable ) {
               return false
+            }
+
+            if (this.addStockItembutton === false) {
+                return false
             }
 
             return true

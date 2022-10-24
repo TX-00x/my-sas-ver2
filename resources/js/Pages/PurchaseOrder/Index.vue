@@ -33,8 +33,8 @@
                 </div>
 
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-5 pl-2 pr-2">
-                    <el-tabs @tab-click="handleClick">
-                        <el-tab-pane label="Pending" key="Pending">
+                    <el-tabs @tab-click="handleClick" v-model="tab_name">
+                        <el-tab-pane label="Pending" name="Pending" key="Pending">
 
                             <app-table
                                 emptyText="No purchase orders created"
@@ -90,7 +90,7 @@
                             </app-table>
 
                         </el-tab-pane>
-                        <el-tab-pane label="Approved" key="Approved">
+                        <el-tab-pane label="Approved" name="Approved" key="Approved">
 
                             <app-table
                                 emptyText="No purchase orders created"
@@ -141,7 +141,7 @@
                             </app-table>
 
                         </el-tab-pane>
-                        <el-tab-pane label="Rejected" key="Rejected">
+                        <el-tab-pane label="Rejected" name="Rejected" key="Rejected">
 
                             <app-table
                                 emptyText="No purchase orders created"
@@ -170,7 +170,7 @@
                             </app-table>
 
                         </el-tab-pane>
-                        <el-tab-pane label="Completed" key="Completed">
+                        <el-tab-pane label="Completed" name="Completed" key="Completed">
                             <app-table
                                 emptyText="No purchase orders created"
                                 :items="purchase_orders.data"
@@ -198,7 +198,6 @@
                             </app-table>
                         </el-tab-pane>
                     </el-tabs>
-
                 </div>
 
                 <paginator class="mt-2"
@@ -240,6 +239,7 @@ export default {
             factory_options: [],
             selected_factory: {},
             query: '',
+            tab_name: ''
         }
     },
     mounted() {
