@@ -44,11 +44,13 @@ class InventoryProjector extends Projector
             'available_quantity' => $materialInventory->available_quantity + $stockAdded->quantity
         ]);
 
-        $balance = $stockAdded->quantity;
+        $balance = 0;
         $latestInventoryLog = $this->lastInventoryLog($stockAdded->aggregateRootUuid());
         if ($latestInventoryLog) {
             $balance += $latestInventoryLog->balance;
         }
+        $balance += $stockAdded->quantity;
+
         InventoryLog::create([
             'material_inventories_aggregate_id' => $stockAdded->aggregateRootUuid(),
             'unit' => $stockAdded->unit,
@@ -63,6 +65,8 @@ class InventoryProjector extends Projector
         ]);
 
         // Create Summery Record
+        // This is only created once because, inventory will only get one
+        // stock add per invoice. others will be adjustment
         $materialInvoiceItem = MaterialInvoiceItem::find($stockAdded->invoiceItemId);
         InventorySummary::firstOrCreate(
             [
