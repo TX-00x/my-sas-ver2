@@ -2,7 +2,9 @@
 
 namespace App\Domains\Inventory\Events\Internal;
 
-class InventoryMaterialAdded extends \Spatie\EventSourcing\StoredEvents\ShouldBeStored
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
+
+class InventoryMaterialAdded extends ShouldBeStored
 {
     public int $variationId;
     public int $userId;

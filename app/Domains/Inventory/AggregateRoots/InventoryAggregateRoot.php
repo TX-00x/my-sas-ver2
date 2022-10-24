@@ -4,10 +4,8 @@ namespace App\Domains\Inventory\AggregateRoots;
 
 use App\Domains\Inventory\Events\Internal\InventoryMaterialAdded;
 use App\Domains\Inventory\Events\Internal\StockAdded;
-use App\Domains\Inventory\Events\Internal\StockAddedManually;
 use App\Domains\Inventory\Events\Internal\StockAddedViaStockAdjust;
 use App\Domains\Inventory\Events\Internal\StockRemoved;
-use App\Domains\Inventory\Events\Internal\StockRemovedManually;
 use App\Domains\Inventory\Events\Internal\StockRemovedViaStockAdjust;
 use App\Domains\Inventory\Exceptions\InventoryException;
 use App\Domains\Inventory\Repositories\InventoryRepository;
@@ -47,9 +45,16 @@ class InventoryAggregateRoot extends AggregateRoot
         $this->balance += $stockAdded->quantity;
     }
 
-    public function removeStock(string $unit, float $quantity, ?int $stylePanelId = null, ?int $outOrderId = null, int $userId)
+    public function removeStock(string $unit, float $quantity, int $stylePanelId, string $outOrderId, array $invoices, int $userId)
     {
-        $this->recordThat(new StockRemoved($unit, $quantity, $stylePanelId, $outOrderId, $userId));
+        $this->recordThat(new StockRemoved(
+            $userId,
+            $unit,
+            $quantity,
+            $stylePanelId,
+            $outOrderId,
+            $invoices,
+        ));
     }
 
     public function applyStockRemoved(StockRemoved $stockAdded)
@@ -57,9 +62,9 @@ class InventoryAggregateRoot extends AggregateRoot
         $this->balance -= $stockAdded->quantity;
     }
 
-    public function addStockViaStockAdjust(string $unit, float $quantity, int $userId, ?string $reason = null)
+    public function addStockViaStockAdjust(string $unit, float $quantity, int $userId, array $invoices, ?string $reason = null)
     {
-        $this->recordThat(new StockAddedViaStockAdjust($unit, $quantity, $userId, $reason));
+        $this->recordThat(new StockAddedViaStockAdjust($unit, $quantity, $userId, $reason, $invoices));
 
         return $this;
     }
@@ -69,9 +74,9 @@ class InventoryAggregateRoot extends AggregateRoot
         $this->balance += $stockAddedViaStockAdjust->quantity;
     }
 
-    public function removeStockViaStockAdjust(string $unit, float $quantity, int $userId, ?string $reason = null)
+    public function removeStockViaStockAdjust(string $unit, float $quantity, int $userId, array $invoices, ?string $reason = null)
     {
-        $this->recordThat(new StockRemovedViaStockAdjust($unit, $quantity, $userId, $reason));
+        $this->recordThat(new StockRemovedViaStockAdjust($unit, $quantity, $userId, $invoices, $reason));
 
         return $this;
     }

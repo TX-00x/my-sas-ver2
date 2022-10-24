@@ -120,6 +120,8 @@ class StockOutController extends Controller
 
         $materialInventory = null;
         $stockAvailable = false;
+        $invoices = [];
+
         if ($materialVariation && $factoryId != "" && $supplierId != "") {
             $materialInventory = MaterialInventory::where('material_variation_id', $materialVariation->id)
                 ->where('factory_id', $factoryId)
@@ -129,12 +131,16 @@ class StockOutController extends Controller
             if ($request->filled('supplier_id') && $materialInventory) {
                 $stockAvailable = true;
             }
-        }
 
+            $invoices = MaterialInvoice::query()
+                ->where('supplier_id',$supplierId)
+                ->where('factory_id',$factoryId)
+                ->select('id','invoice_number')->get();
+        }
 
         return Inertia::render('StockOut/Create', [
             'factories' => $factories,
-            'factoryId' => $factoryId,
+            'factoryId' => (int)$factoryId,
             'styles' => $styles,
             'style_type' => $styleType,
             'style_panels' => $style_panels,
@@ -142,6 +148,7 @@ class StockOutController extends Controller
             'colours' => $colours,
             'suppliers' => $suppliers,
             'customers' => $customers,
+            'invoices' => $invoices,
             'selectedMaterial' => $selectedMaterial,
             'materialInventory' => $materialInventory,
             'stockAvailable' => $stockAvailable
@@ -152,14 +159,15 @@ class StockOutController extends Controller
         CreateStockOutAction $stockOutAction,
         StockOutRequest $stockOutRequest
     ) {
-
         try {
             $stockOutData = StockOutData::fromRequest($stockOutRequest);
             $stockOutAction->execute($stockOutData);
             return Redirect::route('inventory.index')
                 ->with('success', 'Record has been saved successfully.');
         } catch (\Exception $ex) {
+//            throw $ex;
             return back()->withInput()->withErrors(['message' => $ex->getMessage()]);
         }
+
     }
 }

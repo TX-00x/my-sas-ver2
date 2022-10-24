@@ -172,6 +172,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/inventory/{materialInventory}/details', [InventoryController::class, 'show'])->name('inventory.show');
+    Route::get('/inventory/{materialInventory}/summary', [InventoryController::class, 'viewInvoiceDetails'])->name('inventory.summary');
 
     Route::get('/suppliers', [SuppliersController::class, 'index'])->name('suppliers.index');
     Route::get('/suppliers/create', [SuppliersController::class, 'create'])->name('suppliers.create');

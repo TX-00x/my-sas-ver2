@@ -10,7 +10,9 @@ use App\Domains\Inventory\Events\Internal\StockRemoved;
 use App\Domains\Inventory\Events\Internal\StockRemovedManually;
 use App\Domains\Inventory\Events\Internal\StockRemovedViaStockAdjust;
 use App\Models\InventoryLog;
+use App\Models\InventorySummary;
 use App\Models\MaterialInventory;
+use App\Models\MaterialInvoiceItem;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
@@ -42,11 +44,13 @@ class InventoryProjector extends Projector
             'available_quantity' => $materialInventory->available_quantity + $stockAdded->quantity
         ]);
 
-        $balance = $stockAdded->quantity;
+        $balance = 0;
         $latestInventoryLog = $this->lastInventoryLog($stockAdded->aggregateRootUuid());
         if ($latestInventoryLog) {
             $balance += $latestInventoryLog->balance;
         }
+        $balance += $stockAdded->quantity;
+
         InventoryLog::create([
             'material_inventories_aggregate_id' => $stockAdded->aggregateRootUuid(),
             'unit' => $stockAdded->unit,
@@ -59,6 +63,23 @@ class InventoryProjector extends Projector
             'created_at' => $stockAdded->createdAt(),
             'updated_at' => $stockAdded->createdAt(),
         ]);
+
+        // Create Summery Record
+        // This is only created once because, inventory will only get one
+        // stock add per invoice. others will be adjustment
+        $materialInvoiceItem = MaterialInvoiceItem::find($stockAdded->invoiceItemId);
+        InventorySummary::firstOrCreate(
+            [
+                'material_inventory_id' => $materialInventory->id,
+                'material_invoice_id' => $materialInvoiceItem->material_invoice_id,
+            ],
+            [
+                'in' => $stockAdded->quantity,
+                'out' => 0,
+                'unit_price' => $materialInvoiceItem->unit_price,
+                'total_price' => $materialInvoiceItem->sub_total,
+            ]
+        );
     }
 
     public function onStockAddedViaStockAdjust(StockAddedViaStockAdjust $stockAddedViaStockAdjust)
@@ -85,6 +106,21 @@ class InventoryProjector extends Projector
             'created_at' => $stockAddedViaStockAdjust->createdAt(),
             'updated_at' => $stockAddedViaStockAdjust->createdAt(),
         ]);
+
+        foreach ($stockAddedViaStockAdjust->invoices as $invoice) {
+            $materialInvoiceItem = MaterialInvoiceItem::find($invoice["invoice"]["id"]);
+
+            $summery = InventorySummary::query()
+                ->where('material_inventory_id', '=', $materialInventory->id)
+                ->where('material_invoice_id', '=', $materialInvoiceItem->id)
+                ->get()
+                ->first();
+
+            $summery->in = $summery->in + $invoice["usage"];
+            $totalValueAdded = $invoice["usage"] * $summery->unit_price;
+            $summery->total_price = $summery->total_price + $totalValueAdded;
+            $summery->save();
+        }
     }
 
     public function onStockRemoved(StockRemoved $stockRemoved)
@@ -113,6 +149,20 @@ class InventoryProjector extends Projector
             'created_at' => $stockRemoved->createdAt(),
             'updated_at' => $stockRemoved->createdAt(),
         ]);
+
+        //Add record to summery
+        foreach ($stockRemoved->invoices as $invoice) {
+            $summery = InventorySummary::query()
+                ->where('material_inventory_id', '=', $materialInventory->id)
+                ->where('material_invoice_id', '=', $invoice->id)
+                ->get()
+                ->first();
+
+            $summery->out = $summery->out + $invoice->usage;
+            $totalValueReduced = $invoice->usage * $summery->unit_price;
+            $summery->total_price = $summery->total_price - $totalValueReduced;
+            $summery->save();
+        }
     }
 
     public function onStockRemovedViaStockAdjust(StockRemovedViaStockAdjust $stockRemovedViaStockAdjust)
@@ -140,6 +190,21 @@ class InventoryProjector extends Projector
             'created_at' => $stockRemovedViaStockAdjust->createdAt(),
             'updated_at' => $stockRemovedViaStockAdjust->createdAt(),
         ]);
+
+        foreach ($stockRemovedViaStockAdjust->invoices as $invoice) {
+            $materialInvoiceItem = MaterialInvoiceItem::find($invoice["invoice"]["id"]);
+
+            $summery = InventorySummary::query()
+                ->where('material_inventory_id', '=', $materialInventory->id)
+                ->where('material_invoice_id', '=', $materialInvoiceItem->id)
+                ->get()
+                ->first();
+
+            $summery->out = $summery->out + $invoice["usage"];
+            $totalValueReduced = $invoice["usage"] * $summery->unit_price;
+            $summery->total_price = $summery->total_price - abs($totalValueReduced);
+            $summery->save();
+        }
     }
 
     private function getMaterialFromInventory(string $aggregateRootId)

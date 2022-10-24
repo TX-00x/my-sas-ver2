@@ -6,6 +6,7 @@ namespace App\Domains\Stock\Models;
 
 use App\Models\Colour;
 use App\Models\Materials;
+use App\Models\StockOutItemsInvoice;
 use App\Models\Style;
 use App\Models\StylePanel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -39,5 +40,10 @@ class StockOutItem extends Model implements Auditable
     public function colour(): BelongsTo
     {
         return $this->belongsTo(Colour::class, 'colour_id');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(StockOutItemsInvoice::class);
     }
 }

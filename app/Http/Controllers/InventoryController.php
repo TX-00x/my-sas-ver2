@@ -7,7 +7,9 @@ use App\Models\Factory;
 use App\Models\InventoryIn;
 use App\Models\InventoryLog;
 use App\Models\InventoryReserv;
+use App\Models\InventorySummary;
 use App\Models\MaterialInventory;
+use App\Models\MaterialInvoice;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -64,9 +66,17 @@ class InventoryController extends Controller
 
     public function show(MaterialInventory $materialInventory, Request $request)
     {
+        $invoices = MaterialInvoice::query()->select('id','invoice_number')->get();
+
+        $totalValue = InventorySummary::query()
+            ->where('material_inventory_id', $materialInventory->id)
+            ->sum('total_price');
+
         return Inertia::render('Inventory/InventoryShow',
             [
                 'inventory' => $materialInventory->loadMissing(['variation.material', 'variation.colour']),
+                'totalValue' => $totalValue,
+                'invoices' => $invoices,
                 'stockIn' => InventoryLog::query()
                     ->where('material_inventories_aggregate_id', $materialInventory->aggregate_id)
                     ->with('invoiceItem.invoice')
@@ -74,5 +84,18 @@ class InventoryController extends Controller
                     ->withQueryString(),
             ]
         );
+    }
+
+    public function viewInvoiceDetails(MaterialInventory $materialInventory, Request $request)
+    {
+        return Inertia::render('Inventory/InventorySummary', [
+            'material' => $materialInventory->loadMissing(['variation.material', 'variation.colour']),
+            'inventorySummary' => InventorySummary::query()
+                ->where('material_inventory_id', $materialInventory->id)
+                ->with('materialInvoice')
+                ->orderBy('updated_at', 'DESC')
+                ->paginate(15)
+                ->withQueryString(),
+        ]);
     }
 }

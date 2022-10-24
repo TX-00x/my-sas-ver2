@@ -24,17 +24,20 @@ class UpdateInventoryWhenInvoiceCreated
     public function handle(InvoiceCreated $invoiceCreated)
     {
         $invoiceCreated->invoice->loadMissing(['items']);
-        $invoiceCreated->invoice->items->each(function (MaterialInvoiceItem $invoiceItem) use ($invoiceCreated) {
-            $InventoryMaterial = $this->inventoryRepository->getMaterial(
+        $invoice = $invoiceCreated->invoice;
+
+        $invoice->items->each(function (MaterialInvoiceItem $invoiceItem) use ($invoiceCreated) {
+            $material = $this->inventoryRepository->getMaterial(
                 $invoiceItem->material_variation_id,
                 $invoiceCreated->invoice->supplier_id,
                 $invoiceCreated->invoice->factory_id,
             );
 
-            $aggregateRoot = InventoryAggregateRoot::retrieve($InventoryMaterial ? $InventoryMaterial->aggregate_id : Str::uuid()->toString());
+            $materialNotCreated = $material === null;
+            $inventoryAggregateRoot = InventoryAggregateRoot::retrieve($materialNotCreated ? Str::uuid()->toString() : $material->aggregate_id );
 
-            if ($InventoryMaterial === null) {
-                $aggregateRoot->createMaterial(
+            if ($materialNotCreated) {
+                $inventoryAggregateRoot->createMaterial(
                     $invoiceItem->material_variation_id,
                     $invoiceCreated->invoice->supplier_id,
                     $invoiceCreated->invoice->factory_id,
@@ -42,7 +45,7 @@ class UpdateInventoryWhenInvoiceCreated
                 );
             }
 
-            $aggregateRoot->addStock(
+            $inventoryAggregateRoot->addStock(
                 $invoiceItem->unit,
                 $invoiceItem->quantity,
                 $invoiceItem->id,
@@ -51,7 +54,7 @@ class UpdateInventoryWhenInvoiceCreated
                 auth()->user()->id,
             );
 
-            $aggregateRoot->persist();
+            $inventoryAggregateRoot->persist();
         });
     }
 }
