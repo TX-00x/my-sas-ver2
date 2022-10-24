@@ -62,30 +62,6 @@ class DatabaseSeeder extends Seeder
             QuotationSeeder::class,
         ]);
 
-//
-//        $lightDritechBlackInventory = MaterialInventory::factory()->create([
-//            'material_variation_id' => $lightDritechBlack->id,
-//            'unit' => 'm',
-//            'available_quantity' => 610,
-//            'allocated_quantity' => 100,
-//            'usable_quantity' => 500,
-//            'factory_id' => Factory::first(),
-//            'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
-//            'action_taken_by' => $user->id,
-//        ]);
-//
-//        $lightDritechGreenInventory = MaterialInventory::factory()->create([
-//            'material_variation_id' => $lightDritechGreen->id,
-//            'unit' => 'm',
-//            'available_quantity' => 1000,
-//            'allocated_quantity' => 0,
-//            'usable_quantity' => 1000,
-//            'factory_id' => Factory::first(),
-//            'supplier_id' => Supplier::find(1) ? Supplier::find(1)->id : Supplier::factory()->create()->id,
-//            'action_taken_by' => $user->id,
-//        ]);
-//
-
         MaterialPurchaseOrder::factory()->withItems(3)->count(55)->create();
 
     }

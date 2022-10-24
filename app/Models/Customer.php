@@ -45,7 +45,6 @@ class Customer extends Model implements Auditable
     /**
      * @deprecated
      */
-
     public function salesAgent()
     {
         return $this->belongsTo(User::class, 'sales_agent_id');
