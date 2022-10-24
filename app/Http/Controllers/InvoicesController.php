@@ -13,6 +13,7 @@ use App\Models\MaterialInvoice;
 use App\Models\Materials;
 use App\Models\Supplier;
 use App\Models\Unit;
+use Carbon\Carbon;
 use Doctrine\DBAL\Exception\DatabaseObjectExistsException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -65,7 +66,7 @@ class InvoicesController extends Controller
             $invoiceDto = new Invoice();
             $invoiceDto->number = $request->input('number');
             $invoiceDto->poNumber = $request->input('po_number');
-            $invoiceDto->invoicedDate = $request->input('invoiced_date');
+            $invoiceDto->invoicedDate = Carbon::parse($request->input('invoiced_date'));
             $invoiceDto->factory = Factory::find($request->input('factory_id'));
             $invoiceDto->supplier = Supplier::find($request->input('supplier_id'));
 

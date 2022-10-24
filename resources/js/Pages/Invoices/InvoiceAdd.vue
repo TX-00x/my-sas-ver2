@@ -69,6 +69,7 @@
                                         <vc-date-picker
                                             color="white"
                                             v-model='invoice.invoiced_date'
+                                            :model-config="modelConfig"
                                         >
                                             <template v-slot="{ inputValue, inputEvents }">
                                                 <input
@@ -437,6 +438,10 @@ export default {
             invoice_item_has_error: false,
             invoice_has_error: false,
             error_message: '',
+            modelConfig: {
+                type: 'string',
+                mask: 'YYYY-MM-DD',
+            },
         }
     },
     mounted() {
@@ -447,7 +452,8 @@ export default {
         }
 
         this.copyMaterialPurchaseOrderToInvoice();
-        this.invoice.invoiced_date = new Date();
+        let today  = new Date();
+        this.invoice.invoiced_date = today.toISOString().split('T')[0];
         if (this.materialPurchaseOrder) {
             this.isItemReadOnly = true;
         }

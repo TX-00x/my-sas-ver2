@@ -42,7 +42,7 @@
                                     <input
                                         disabled
                                         class="appearance-none w-48 py-2 px-4 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                        type="text" :value="formatDate(invoice[0].created_at)">
+                                        type="text" :value="invoice[0].invoiced_date">
                                 </div>
                                 <div class="mb-1 md:mb-1 md:flex items-center">
                                     <label class="w-32 text-gray-800 block font-bold text-xs uppercase tracking-wide">Factory</label>
@@ -64,6 +64,14 @@
                                             class="appearance-none w-48 py-2 px-4 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded-md"
                                             type="text" :value="invoice[0].supplier.name">
                                     </div>
+                                </div>
+                                <div class="mb-4 md:mb-4 md:flex items-center">
+                                    <label class="w-32 text-gray-800 block font-bold text-xs uppercase tracking-wide">Invoice created date</label>
+                                    <span class="mr-4 inline-block hidden md:block">:</span>
+                                    <input
+                                        disabled
+                                        class="appearance-none w-48 py-2 px-4 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                        type="text" :value="invoice[0].created_at">
                                 </div>
                             </div>
 

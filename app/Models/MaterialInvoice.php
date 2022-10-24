@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,17 @@ class MaterialInvoice extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $guarded = [];
+
+
+    public function getInvoicedDateAttribute($date)
+    {
+        return Carbon::parse($date)->format('d/m/Y');
+    }
+
+    public function getCreatedAtAttribute($date)
+    {
+        return Carbon::parse($date)->format('d/m/Y H:i:s');
+    }
 
     public function items(): HasMany
     {
