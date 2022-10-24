@@ -19,6 +19,7 @@ class CreateInvoices
             'purchase_order_number' => $invoice->poNumber,
             'invoice_number' => $invoice->number,
             'factory_id' => $invoice->factory->id,
+            'invoiced_date' => $invoice->invoicedDate
         ]);
 
         collect($invoice->items)

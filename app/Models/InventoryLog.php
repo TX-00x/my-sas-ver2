@@ -13,14 +13,14 @@ class InventoryLog extends Model
 
     protected $appends = ['total_price'];
 
-    public function getTotalPriceAttribute()
-    {
-        return $this->balance * $this->in_unit_price;
-    }
-
     public function getCreatedAtAttribute($date)
     {
         return Carbon::parse($date)->format('d-M-Y H:i:s');
+    }
+
+    public function getTotalPriceAttribute()
+    {
+        return $this->balance * $this->in_unit_price;
     }
 
     public function invoiceItem()
