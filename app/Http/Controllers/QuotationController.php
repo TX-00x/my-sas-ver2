@@ -22,13 +22,21 @@ use Inertia\Inertia;
 
 class QuotationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $quotations = Quotation::query()
-            ->paginate();
+        $quotationsQuery = Quotation::query();
+        if (isset($request->get('filter')['my'])) {
+            $quotationsQuery->where(function ($whereQuery) {
+                $whereQuery->where('sales_agent_id', '=', auth()->user()->id)
+                    ->orWhere('customer_agent_id', '=', auth()->user()->id);
+            });
+        }
+
+        $quotations = $quotationsQuery->paginate();
 
         return Inertia::render('Quotations/Index', [
-            'quotations' => QuotationResource::collection($quotations)
+            'quotations' => QuotationResource::collection($quotations),
+            'propFilters' => $request->get('filter')
         ]);
     }
 

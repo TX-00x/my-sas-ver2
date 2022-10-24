@@ -90,10 +90,26 @@ export default {
         quotations: {
             required: true,
             type: Object,
+        },
+        propFilters: {
+            required: false,
+            type: Object,
         }
+    },
+    mounted() {
+        console.log(this.propFilters)
+        //
+        // if (this.propFilters) {
+        // }
     },
     data() {
         return {
+            filterOptions: {
+                filter: {
+                    my: true,
+                }
+            },
+
             options: [{
                 value: 'all',
                 label: 'All'
