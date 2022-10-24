@@ -103,13 +103,18 @@
                         <h4>Freight charges</h4>
                     </div>
                     <div class="p-5">
-                        <div class="flex flex-row justify-start">
-                            <div class="grid grid-cols-5 gap-3">
+                        <div class="">
+                            <div class="grid grid-cols-3 gap-3">
                                 <div>
                                     <div>
                                         <label for="region" class="block">Region</label>
                                     </div>
-                                    <el-select value-key="id" v-model="form.freight" placeholder="Region">
+                                    <el-select
+                                        value-key="id"
+                                        v-model="form.freight"
+                                        placeholder="Region"
+                                        class="w-full"
+                                    >
                                         <el-option
                                             v-for="freight in propFreightCharges"
                                             :key="freight.id"
@@ -121,24 +126,28 @@
                                 </div>
                                 <div>
                                     <div>
+                                        <label for="no_of_boxes" class="block">No of boxes</label>
+                                    </div>
+                                    <div class="w-full">
+                                        <el-input-number style="width: 100%" placeholder="No of boxes" :min="0" v-model="form.freightBoxesCount"></el-input-number>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center">
+                                    <div>
+                                        <el-checkbox v-model="form.freightSurgeAdded" label="Apply 6% air freight surcharge"></el-checkbox>
+                                    </div>
+                                </div>
+                                <div class="pt-5">
+                                    <div>
                                         <label for="cost_per_region" class="block">Cost per region</label>
                                     </div>
                                     <div class="text-sm text-left"><span class="text-lg">NZD {{ form.freight.amount }}</span></div>
                                 </div>
-                                <div>
-                                    <div>
-                                        <label for="no_of_boxes" class="block">No of boxes</label>
-                                    </div>
-                                    <el-input-number placeholder="No of boxes" :min="0" v-model="form.freightBoxesCount"></el-input-number>
-                                </div>
-                                <div class="text-sm text-center">
+                                <div class="pt-5">
                                     <div>
                                         <label for="total_freight_charge" class="block">Total freight charge</label>
                                     </div>
                                     <span class="text-lg">NZD {{ form.totalFreightCost = totalFreightCost}}</span>
-                                </div>
-                                <div>
-                                    <el-checkbox v-model="form.freightSurgeAdded" label="Apply 6% air freight surcharge"></el-checkbox>
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-3 gap-3 pb-8">
             <div>
                 <div>
                     <label for="customer" class="block">Customer name</label>
@@ -27,19 +27,24 @@
                     </el-option>
                 </el-select>
             </div>
-            <div class="flex flex-col justify-center items-center">
+            <div>
                 <div>
-                    <label for="quotation-type" class="block">Quotation type</label>
-                </div>
-                <div>
-                    <el-radio class="py-1" v-model="form.type" label="general">General</el-radio>
-                </div>
-                <div>
-                    <el-radio class="py-1" v-model="form.type" label="funding">Funding</el-radio>
+                    <div>
+                        <label for="quotation-type" class="block py-1">Quotation type</label>
+                    </div>
+                    <div class="flex flex-row">
+                        <div>
+                            <el-radio class="p-1" v-model="form.type" label="general">General</el-radio>
+                        </div>
+                        <div>
+                            <el-radio class="p-1" v-model="form.type" label="funding">Funding</el-radio>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-3">
+
+        <div class="grid grid-cols-3 gap-3 pb-8">
             <div>
                 <div>
                     <label for="club_name" class="block">Team/Club/School</label>
@@ -59,14 +64,16 @@
                     </el-option>
                 </el-select>
             </div>
-        </div>
-        <div class="grid grid-cols-3 gap-3 py-8">
             <div>
                 <div>
                     <label for="attention_person" class="block">Attention person</label>
                 </div>
                 <el-input placeholder="Attention person name" name="attention_person" v-model="form.attention_person"></el-input>
             </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+
             <div>
                 <div>
                     <label for="delivery_address" class="block">Delivery address</label>

@@ -5,7 +5,7 @@
                 <div>
                     <label for="category" class="block">Category</label>
                 </div>
-                <el-select @change="onCategoryChanged" name="category" v-model="item.category_id" placeholder="Category">
+                <el-select @change="onCategoryChanged" name="category" class="w-full" v-model="item.category_id" placeholder="Category">
                     <el-option
                         v-for="category in propCategories"
                         :key="category.id"
@@ -20,7 +20,16 @@
                 <div>
                     <label for="style_code" class="block">Style code</label>
                 </div>
-                <el-select name="style_code" @change="onStyleCodeChange" value-key="id" :disabled="propStyleCodes.length === 0" filterable v-model="item.style_code" placeholder="Style code">
+                <el-select
+                    class="w-full"
+                    name="style_code"
+                    @change="onStyleCodeChange"
+                    value-key="id"
+                    :disabled="propStyleCodes.length === 0"
+                    filterable
+                    v-model="item.style_code"
+                    placeholder="Style code"
+                >
                     <el-option
                         v-for="item in propStyleCodes"
                         :key="item.id"
@@ -41,7 +50,7 @@
                 <div>
                     <label for="garment_price" class="block">Garment price</label>
                 </div>
-                <el-select @change="onItemPriceChange" name="garment_price" placeholder="Default Garment Price" v-model="item.price_type">
+                <el-select class="w-full" @change="onItemPriceChange" name="garment_price" placeholder="Default Garment Price" v-model="item.price_type">
                     <el-option value="default" label="Default" />
                     <el-option value="custom" label="Custom" />
                 </el-select>
@@ -52,7 +61,7 @@
                 <div>
                     <label for="embellishment_type" class="block">Embellishment type</label>
                 </div>
-                <el-select v-model="item.type" name="embellishment_type" placeholder="Select embellishment type">
+                <el-select class="w-full" v-model="item.type" name="embellishment_type" placeholder="Select embellishment type">
                     <el-option value="cut_and_sew" label="Cut and Saw" />
                     <el-option value="sublimation" label="Sublimation" />
                 </el-select>
