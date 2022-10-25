@@ -51,7 +51,7 @@ class QuotationSeeder extends Seeder
             customerId: CustomerSeeder::customer1()->id,
             salesAgentId: UserSeeder::getSalesUser1()->id,
             customerSalesAgentId: UserSeeder::getCustomerAgentUser1()->id,
-            type:  'generic',
+            type:  'general',
             club:  'club',
             attentionPerson:  'Keith Shawn',
             deliveryAddress:  '22 fake address by, Fake City',

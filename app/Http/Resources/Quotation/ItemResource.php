@@ -14,14 +14,17 @@ class ItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'style' => new StyleResource($this->style),
+            'category_id' => $this->category_id,
+            'style_code' => new StyleResource($this->style),
             'quantity' => $this->quantity,
             'unit_price' => $this->floatWith2DecimalPoints($this->unit_price),
             'unit_price_total' => $this->floatWith2DecimalPoints($this->unit_price_total),
             'embellishment_total' => $this->floatWith2DecimalPoints($this->embellishment_total),
-            'production_type' => $this->production_type,
-            'note' => $this->note,
-            'gross_total' => $this->floatWith2DecimalPoints($this->item_gross_total),
+            'embellishments' => $this->embellishments,
+            'type' => $this->production_type,
+            'price_type' => $this->price_type,
+            'notes' => $this->note,
+            'gross_price' => $this->floatWith2DecimalPoints($this->item_gross_total),
         ];
     }
 }

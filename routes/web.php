@@ -243,6 +243,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
 
     Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+    Route::get('/quotations/edit/{quotation}', [QuotationController::class, 'edit'])->name('quotations.edit');
     Route::post('/quotations', [QuotationController::class, 'store'])->name('quotations.store');
 
     Route::get('/accounts/invoices', [AccountInvoiceController::class, 'index'])->name('accounts.invoices');

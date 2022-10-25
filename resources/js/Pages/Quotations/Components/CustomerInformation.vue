@@ -5,7 +5,7 @@
                 <div>
                     <label for="customer" class="block">Customer name</label>
                 </div>
-                <el-select v-model="form.customer" name="customer" class="w-full" placeholder="Select customer">
+                <el-select v-model="form.customer_id" name="customer" class="w-full" placeholder="Select customer">
                     <el-option
                         v-for="customer in customerOptions"
                         :key="customer.id"
@@ -18,7 +18,7 @@
                 <div>
                     <label for="cs-agent" class="block">Customer service name</label>
                 </div>
-                <el-select class="w-full" name="cs-agent" placeholder="Select customer service person" v-model="form.customer_service_agent">
+                <el-select class="w-full" name="cs-agent" placeholder="Select customer service person" v-model="form.customer_service_agent_id">
                     <el-option
                         v-for="csAgent in propCustomerSupportAgents"
                         :key="csAgent.id"
@@ -55,7 +55,7 @@
                 <div>
                     <label for="customer_sales_person" class="block">Customer sales person</label>
                 </div>
-                <el-select class="w-full" v-model="form.sales_agent" name="customer_sales_person" placeholder="Customer sales person">
+                <el-select class="w-full" v-model="form.sales_agent_id" name="customer_sales_person" placeholder="Customer sales person">
                     <el-option
                         v-for="saleAgent in propSalesAgents"
                         :key="saleAgent.id"
@@ -110,32 +110,22 @@ export default {
             required: true,
         }
     },
-    data(){
-        return {
-            form:{
-                customer: null,
-                sales_agent: null,
-                type:'general',
-                club: null,
-                attention_person: null,
-                delivery_address: null,
-            },
-        }
-    },
-    watch: {
+    computed:{
         form: {
-            deep: true,
-            handler(newValue) {
+            get() {
+                return this.value;
+            },
+            set(val) {
                 const valueForEmmit = this.value;
-                valueForEmmit.customer_id = newValue.customer;
-                valueForEmmit.sales_agent_id = newValue.sales_agent;
-                valueForEmmit.customer_service_agent_id = newValue.customer_service_agent;
-                valueForEmmit.type = newValue.type;
-                valueForEmmit.club = newValue.club;
-                valueForEmmit.attention_person = newValue.attention_person;
-                valueForEmmit.delivery_address = newValue.delivery_address;
+                valueForEmmit.customer_id = val.customer_id;
+                valueForEmmit.sales_agent_id = val.sales_agent_id;
+                valueForEmmit.customer_service_agent_id = val.customer_service_agent_id;
+                valueForEmmit.type = val.type;
+                valueForEmmit.club = val.club;
+                valueForEmmit.attention_person = val.attention_person;
+                valueForEmmit.delivery_address = val.delivery_address;
 
-                this.$emit('input', valueForEmmit)
+                this.$emit('input', valueForEmmit);
             }
         }
     }

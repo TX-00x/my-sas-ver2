@@ -111,7 +111,12 @@
 
         <div class="py-2 flex flex-row justify-between">
             <el-button type="danger" plain>Reset table</el-button>
-            <el-button @click="addItem" type="primary">Add</el-button>
+            <div v-if="propEditWindow">
+                <el-button @click="addItem" type="primary">Add</el-button>
+            </div>
+            <div v-else>
+                <el-button @click="saveItem" type="primary">Save</el-button>
+            </div>
         </div>
     </div>
 </template>
@@ -147,6 +152,16 @@ export default {
         propEmbellishments: {
             type: Array,
             required: true
+        },
+        propEditableItemIndex: {
+            type: Number,
+            required: false,
+            default: null
+        },
+        propEditWindow:{
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     data(){
@@ -158,6 +173,9 @@ export default {
 
     },
     watch: {
+        propEditableItemIndex:function (newVal, oldVal) {
+            this.item = this.value[newVal];
+        },
         itemEmbellishmentType: {
             deep: true,
             handler(embellishmentType) {
@@ -243,7 +261,9 @@ export default {
             this.$emit('input', items)
             this.item = this.itemData();
         },
+        saveItem() {
 
+        },
         prepareEmbellishmentsForCutAndSaw() {
             this.item.embellishments = this.propEmbellishments.map(function (embellishment) {
                 return Object.assign({

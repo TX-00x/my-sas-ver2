@@ -72,6 +72,9 @@
                                     <inertia-link class="text-blue-500 font-semibold" :href="route('quotations.show', {quotation: quotation.id})">
                                         View
                                     </inertia-link>
+                                    <inertia-link class="text-blue-500 font-semibold" :href="route('quotations.edit', {quotation: quotation.id})">
+                                        Edit
+                                    </inertia-link>
                                 </td>
                             </tr>
                         </tbody>

@@ -146,6 +146,30 @@ class QuotationController extends Controller
         ]);
     }
 
+    public function edit(Quotation $quotation)
+    {
+        $customers = Customer::query()->with(['csAgent', 'salesAgent'])->get();
+        $salesAgents = User::query()->role(User::ROLE_SALES_AGENT)->get();
+        $csAgents = User::query()->role(User::ROLE_CUSTOMER_SERVICE_AGENT)->get();
+        $freightCharges = FreightCharge::all();
+        $categories = Category::all();
+        $styleCodes = [];
+        $embellishments = Embellishment::all();
+
+        $quotation->load(['customer.addresses', 'items', 'freight.defaultFreightCost']);
+
+        return Inertia::render('Quotations/Edit', [
+            'customerOptions' => $customers,
+            'propSalesAgents' => $salesAgents,
+            'propCustomerSupportAgents' => $csAgents,
+            'propCategories' => $categories,
+            'propStyleCodes' => $styleCodes,
+            'propEmbellishments' => $embellishments,
+            'propFreightCharges' => $freightCharges,
+            'propQuotation' => (new QuotationResource($quotation)),
+        ]);
+    }
+
     public function salesAction(Quotation $quotation, Request $request)
     {
         $aggregateRoot = QuotationAggregateRoot::retrieve($quotation->aggregate_id);
