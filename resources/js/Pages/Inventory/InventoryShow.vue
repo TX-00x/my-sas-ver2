@@ -32,6 +32,7 @@
                             >
                                 Stock Adjustment
                             </button>
+
                         </div>
 
                         <table class="mt-5 min-w-full divide-y divide-gray-200">
@@ -153,13 +154,16 @@
             </template>
 
             <template #content>
-<!--                <div class="flex flex-row justify-start py-5">-->
-<!--                    <div class="w-1/2">-->
-<!--                        <label for="reason" class="block text-sm font-medium text-gray-700">Reason</label>-->
-<!--                        <input v-model="adjustment.reason" type="text" name="reason" id="reason"-->
-<!--                               class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">-->
-<!--                    </div>-->
-<!--                </div>-->
+                <div class="flex justify-center">
+                    <el-switch
+                        style="display: block"
+                        v-model="adjustment.adjustByAddingStock"
+                        active-color="#13ce66"
+                        inactive-color="#ff4949"
+                        active-text="Add stock"
+                        inactive-text="Remove stock">
+                    </el-switch>
+                </div>
 
                 <div class="py-4">
                     <el-row :gutter="20">
@@ -170,8 +174,13 @@
                         <el-col :span="20">
                             <div class="w-1/2">
                                 <label for="reason" class="block text-base font-medium text-gray-700">Reason</label>
-                                <input v-model="adjustment.reason" type="text" name="reason" id="reason"
-                                       class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <el-input
+                                    resize="none"
+                                    type="textarea"
+                                    :rows="2"
+                                    placeholder="Reason"
+                                    v-model="adjustment.reason">
+                                </el-input>
                             </div>
                         </el-col>
                     </el-row>
@@ -209,7 +218,7 @@
                         <el-col :span="10">
                             <div>
                                 <label class="text-base font-medium text-gray-700">
-                                    Usage
+                                    {{adjustAction}} amount
                                 </label>
                                 <div>
                                     <div class="flex flex-wrap items-stretch w-full mb-4 relative">
@@ -220,13 +229,7 @@
                                                 </template>
                                             </span>
                                         </div>
-                                        <el-tooltip content="Add '-' before qty to decrease stock" placement="top">
-                                        <input type="text"
-                                               class="flex-shrink flex-grow flex-auto leading-normal w-20 flex-1 h-10 border-gray-300 rounded-md rounded-l-none focus:ring-indigo-500 focus:border-indigo-500 px-3 relative"
-                                               placeholder="0.00"
-                                               id="sub_total-value"
-                                               v-model.number="item.usage">
-                                        </el-tooltip>
+                                        <el-input-number v-model="item.usage" :min="0"></el-input-number>
                                     </div>
                                 </div>
                             </div>
@@ -304,6 +307,7 @@ export default {
         return {
             showAdjustmentWindow: false,
             adjustment: {
+                adjustByAddingStock: true,
                 reason: '',
                 invoice_usages: [],
             }
@@ -313,6 +317,9 @@ export default {
         this.adjustment.invoice_usages = [{invoice:{}, usage:null}];
     },
     methods: {
+        handleAdjustStockMenu() {
+
+        },
         adjust() {
             this.$inertia.post(`/inventory/${this.inventory.id}/adjust`, this.adjustment).then(function ({data}) {
                 this.showAdjustmentWindow = false
@@ -321,7 +328,6 @@ export default {
             })
         },
         addStockItemInvoice() {
-            let lestIndex = this.adjustment.invoice_usages.length - 1;
             this.adjustment.invoice_usages.push({invoice:{}, usage:null})
         },
         removeStockItemInvoice(index) {
@@ -334,6 +340,11 @@ export default {
         },
         showTotalPrice(price) {
             return price === 0 ? '' : price;
+        }
+    },
+    computed:{
+        adjustAction(){
+            return this.adjustment.adjustByAddingStock ? 'Increase' : 'Decrease';
         }
     }
 }

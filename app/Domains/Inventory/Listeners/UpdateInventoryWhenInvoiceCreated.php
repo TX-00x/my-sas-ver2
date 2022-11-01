@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Inventory\Listeners;
 
-use App\Domains\Inventory\Actions\CreateInventoryStockIn;
+use App\Domains\Inventory\Actions\AdjustStock;
 use App\Domains\Inventory\Actions\InventoryCreate;
 use App\Domains\Inventory\AggregateRoots\InventoryAggregateRoot;
 use App\Domains\Inventory\Repositories\InventoryRepository;

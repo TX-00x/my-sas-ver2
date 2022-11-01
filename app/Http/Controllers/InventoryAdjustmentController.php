@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Domains\Inventory\Actions\CreateInventoryStockIn;
+use App\Domains\Inventory\Actions\AdjustStock;
 use App\Domains\Inventory\Actions\IncreaseAvailableQuantity;
 use App\Models\InventoryIn;
 use App\Models\MaterialInventory;
@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Validator;
 class InventoryAdjustmentController
 {
     public function store(
-        CreateInventoryStockIn $createInventoryStockIn,
+        AdjustStock       $adjustStock,
         MaterialInventory $inventory,
-        Request $request
+        Request           $request
     ) {
         try {
             $validator = Validator::make($request->all(), [
@@ -31,12 +31,13 @@ class InventoryAdjustmentController
                 return back()->withInput()->withErrors(['message' => $validator->messages()->first()]);
             }
 
-            $createInventoryStockIn->execute(
-                $inventory,
-                null,
-                $request->input('invoice_usages'),
-                auth()->user()->id,
-                $request->input('reason')
+            $adjustStock->execute(
+                inventory: $inventory,
+                invoice: null,
+                invoicesUsages: $request->input('invoice_usages'),
+                adjustByAddingStock: $request->adjustByAddingStock,
+                userId: auth()->user()->id,
+                reason: $request->input('reason')
             );
 
             Session::flash('message', 'Stock adjusted successfully');
