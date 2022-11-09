@@ -22,7 +22,7 @@ class InventoryAdjustmentController
         try {
             $validator = Validator::make($request->all(), [
                 'invoice_usages' => 'required|array',
-                'invoice_usages.*.usage' => 'required|numeric|not_in:0',
+                'invoice_usages.*.usage' => 'required|numeric|not_in:0|min:0',
                 'reason' => 'required'
             ]);
 

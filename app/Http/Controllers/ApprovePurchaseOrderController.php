@@ -17,7 +17,7 @@ class ApprovePurchaseOrderController extends Controller
 
             (new ApprovePurchaseOrderAction())->execute($materialPurchaseOrder);
 
-            return redirect()->route('purchase.orders.index')
+            return redirect()->route('purchase.orders.index',['status' => 'Pending'])
                 ->with('message', "The purchase order has been approved successfully.");
 
         } catch (\Exception $ex) {
