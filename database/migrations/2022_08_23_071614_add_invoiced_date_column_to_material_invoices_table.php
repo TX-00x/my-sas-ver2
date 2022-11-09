@@ -15,7 +15,7 @@ return new class extends Migration
 
     public function up()
     {
-        if (app()->environment(['production'])) {
+        if (app()->environment(['local'])) {
             Schema::table('material_invoices', function (Blueprint $table) {
                 $table->dateTimeTz('invoiced_date')->after('updated_at')->nullable();
             });

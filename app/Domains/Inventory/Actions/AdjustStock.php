@@ -7,9 +7,16 @@ use App\Domains\Inventory\AggregateRoots\InventoryAggregateRoot;
 use App\Models\MaterialInventory;
 use App\Models\MaterialInvoice;
 
-class CreateInventoryStockIn
+class AdjustStock
 {
-    public function execute(MaterialInventory $inventory, ?MaterialInvoice $invoice, array $invoicesUsages, $userId, $reason)
+    public function execute(
+        MaterialInventory $inventory,
+        ?MaterialInvoice $invoice,
+        array $invoicesUsages,
+        bool $adjustByAddingStock,
+        $userId,
+        $reason
+    )
     {
         $totalUsage = 0;
         foreach ($invoicesUsages as $invoice) {
@@ -18,7 +25,7 @@ class CreateInventoryStockIn
 
         $aggregateRoot = InventoryAggregateRoot::retrieve($inventory->aggregate_id);
 
-        if ($totalUsage > 0) {
+        if ($adjustByAddingStock) {
             $aggregateRoot->addStockViaStockAdjust(
                 $inventory->unit,
                 $totalUsage,
@@ -30,11 +37,10 @@ class CreateInventoryStockIn
             $aggregateRoot->persist();
         }
 
-        if ($totalUsage < 0) {
-            $quantity = abs($totalUsage);
+        if (!$adjustByAddingStock) {
             $aggregateRoot->removeStockViaStockAdjust(
                 $inventory->unit,
-                $quantity,
+                $totalUsage,
                 $userId,
                 $invoicesUsages,
                 $reason

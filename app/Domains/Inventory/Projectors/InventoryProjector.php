@@ -198,7 +198,7 @@ class InventoryProjector extends Projector
         ]);
 
         foreach ($stockRemovedViaStockAdjust->invoices as $invoiceData) {
-            $materialInvoiceItem = MaterialInvoiceItem::find($invoiceData["invoiceData"]["id"]);
+            $materialInvoiceItem = MaterialInvoiceItem::find($invoiceData["invoice"]["id"]);
 
             $invoice = InventorySummary::query()
                 ->where('material_inventory_id', '=', $materialInventory->id)
@@ -206,7 +206,7 @@ class InventoryProjector extends Projector
                 ->get()
                 ->first();
 
-            $invoice->out = abs($invoice->out + abs($invoiceData["usage"]));
+            $invoice->out = $invoice->out + $invoiceData["usage"];
             $invoice->balance = $invoice->in - $invoice->out;
             $invoice->total_price = $invoice->balance * $invoice->unit_price;
             $invoice->save();

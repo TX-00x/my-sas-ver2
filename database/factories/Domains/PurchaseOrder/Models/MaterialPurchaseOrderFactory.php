@@ -18,6 +18,7 @@ class MaterialPurchaseOrderFactory extends Factory
         return [
             'supplier_id' => Supplier::factory(),
             'factory_id' => \App\Models\Factory::factory(),
+            'created_by' => User::where('email', 'admin@example.com')->first()->id
         ];
     }
 
