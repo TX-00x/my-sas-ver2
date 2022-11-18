@@ -249,7 +249,7 @@ export default {
                     id:embellishmentsKey.id,
                     image: "",
                     image_url: embellishmentsKey.public_image_path,
-                    position: { name:this.capitalizeFirstLetter(embellishmentsKey.position), value: embellishmentsKey.position },
+                    position: embellishmentsKey.position,
                     type: embellishmentsKey.embellishment_type,
                     already_uploaded: true
                 }

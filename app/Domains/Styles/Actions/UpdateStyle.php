@@ -81,7 +81,7 @@ class UpdateStyle
 
                     $dbRecord->update([
                         'embellishment_id' => $embellishment->type['id'],
-                        'position' => $embellishment->position['value']
+                        'position' => $embellishment->position
                     ]);
                 }
 

@@ -241,17 +241,10 @@
                                         ></app-select>
                                     </el-col>
                                     <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
-                                        <app-select
-                                            :filterable="true"
-                                            :multiple="false"
-                                            :options="[{name:'Top', value:'top'}, {name:'Bottom', value:'bottom'}]"
-                                            option-label="name"
-                                            option-value="value"
-                                            no-data-text="No Positions available"
-                                            no-match-text="Position not found"
+                                        <el-input
                                             v-model="item.position"
-                                            placeholder="Select a position"
-                                        ></app-select>
+                                            placeholder="Type a position"
+                                        ></el-input>
                                     </el-col>
                                     <el-col :xs="6" :sm="6" :md="6" :lg="6" :xl="6">
                                         <label :for="'dropzone-embellishments_'+index"
@@ -381,7 +374,7 @@ export default {
                     id:embellishmentsKey.id,
                     image: "",
                     image_url: embellishmentsKey.public_image_path,
-                    position: { name:this.capitalizeFirstLetter(embellishmentsKey.position), value: embellishmentsKey.position },
+                    position: embellishmentsKey.position,
                     type: embellishmentsKey.embellishment_type,
                     already_uploaded: true
                 }
