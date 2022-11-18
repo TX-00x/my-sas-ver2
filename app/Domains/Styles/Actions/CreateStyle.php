@@ -79,7 +79,7 @@ class CreateStyle
                 $image_path = $embellishments->image->store('style_images', 'public');
                 $embellishmentStyle->image_path = $image_path;
                 $embellishmentStyle->embellishment_id = $embellishments->type['id'];
-                $embellishmentStyle->position = $embellishments->position['value'];
+                $embellishmentStyle->position = $embellishments->position;
 
                 $style->embellishments()->save($embellishmentStyle);
             }
